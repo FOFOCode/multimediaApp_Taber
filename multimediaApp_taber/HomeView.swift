@@ -1,8 +1,10 @@
 import SwiftUI
 
 struct HomeView: View {
+    @StateObject private var localization = LocalizationManager.shared
     @State private var appearAnimation = false
-    @State private var cardAppear = [false, false, false]
+    @State private var cardAppear = [false, false, false, false]
+    @State private var showLanguageSelector = false
     
     var body: some View {
         NavigationStack {
@@ -11,6 +13,35 @@ struct HomeView: View {
                 
                 ScrollView(showsIndicators: false) {
                     VStack(spacing: 32) {
+                        // Botón de idioma en la esquina superior derecha
+                        HStack {
+                            Spacer()
+                            Button {
+                                showLanguageSelector = true
+                            } label: {
+                                HStack(spacing: 6) {
+                                    Image(systemName: "globe")
+                                        .font(.system(size: 16, weight: .semibold))
+                                    Text(localization.currentLanguage.uppercased())
+                                        .font(.caption.weight(.bold))
+                                }
+                                .foregroundStyle(Color.aliceBlue)
+                                .padding(.horizontal, 12)
+                                .padding(.vertical, 8)
+                                .background(
+                                    Capsule()
+                                        .fill(Color.cobaltBlue.opacity(0.3))
+                                        .overlay(
+                                            Capsule()
+                                                .stroke(Color.aliceBlue.opacity(0.3), lineWidth: 1)
+                                        )
+                                )
+                                .shadow(color: Color.cobaltBlue.opacity(0.2), radius: 8, x: 0, y: 4)
+                            }
+                        }
+                        .padding(.horizontal, 24)
+                        .padding(.top, 10)
+                        
                         // Header con saludo dinámico
                         VStack(spacing: 12) {
                             // Icono decorativo
@@ -38,12 +69,12 @@ struct HomeView: View {
                                     .font(.title3.weight(.medium))
                                     .foregroundStyle(Color.aliceBlue.opacity(0.9))
                                 
-                                Text("Taber Móvil")
+                                Text(L10n.appName.localized())
                                     .font(.system(size: 38, weight: .bold, design: .rounded))
                                     .foregroundStyle(Color.aliceBlue)
                             }
                             
-                            Text("Selecciona tu contenido favorito")
+                            Text(L10n.selectContent.localized())
                                 .font(.subheadline.weight(.medium))
                                 .foregroundStyle(Color.aliceBlue.opacity(0.75))
                                 .padding(.top, 4)
@@ -59,9 +90,9 @@ struct HomeView: View {
                             NavigationLink(destination: RadioView()) {
                                 EnhancedActionCard(
                                     icon: "dot.radiowaves.left.and.right",
-                                    title: "Radio Bautista",
-                                    subtitle: "106 FM • En vivo 24/7",
-                                    description: "Música y programación cristiana",
+                                    title: L10n.radioTitle.localized(),
+                                    subtitle: L10n.radioSubtitle.localized(),
+                                    description: L10n.radioDescription.localized(),
                                     gradient: [Color.dodgerBlue, Color.brilliantAzure, Color.twitterBlue],
                                     accentIcon: "antenna.radiowaves.left.and.right"
                                 )
@@ -72,9 +103,9 @@ struct HomeView: View {
                             NavigationLink(destination: TVView()) {
                                 EnhancedActionCard(
                                     icon: "tv.fill",
-                                    title: "Taber TV's",
-                                    subtitle: "Streaming • HD",
-                                    description: "Televisión en vivo",
+                                    title: L10n.tvTitle.localized(),
+                                    subtitle: L10n.tvSubtitle.localized(),
+                                    description: L10n.tvDescription.localized(),
                                     gradient: [Color.twitterBlue, Color.oceanDeep, Color.cobaltBlue],
                                     accentIcon: "play.tv.fill"
                                 )
@@ -85,15 +116,28 @@ struct HomeView: View {
                             NavigationLink(destination: InfoView()) {
                                 EnhancedActionCard(
                                     icon: "info.circle.fill",
-                                    title: "Información",
-                                    subtitle: "Horarios • Ubicación",
-                                    description: "Servicios y dirección",
+                                    title: L10n.infoTitle.localized(),
+                                    subtitle: L10n.infoSubtitle.localized(),
+                                    description: L10n.infoDescription.localized(),
                                     gradient: [Color.brilliantAzure, Color.coolSky2, Color.skyBlue],
                                     accentIcon: "calendar.badge.clock"
                                 )
                             }
                             .opacity(cardAppear[2] ? 1 : 0)
                             .offset(y: cardAppear[2] ? 0 : 30)
+                            
+                            NavigationLink(destination: BibleView()) {
+                                EnhancedActionCard(
+                                    icon: "book.fill",
+                                    title: L10n.bibleTitle.localized(),
+                                    subtitle: L10n.bibleSubtitle.localized(),
+                                    description: L10n.bibleDescription.localized(),
+                                    gradient: [Color.cobaltBlue, Color.dodgerBlue, Color.twitterBlue],
+                                    accentIcon: "book.closed.fill"
+                                )
+                            }
+                            .opacity(cardAppear[3] ? 1 : 0)
+                            .offset(y: cardAppear[3] ? 0 : 30)
                         }
                         .padding(.top, 10)
                         
@@ -104,6 +148,9 @@ struct HomeView: View {
             }
             .toolbar(.hidden, for: .navigationBar)
         }
+        .sheet(isPresented: $showLanguageSelector) {
+            LanguageSelectorView()
+        }
         .onAppear {
             NotificationCenter.default.post(name: .stopAllMedia, object: nil)
             
@@ -111,7 +158,7 @@ struct HomeView: View {
                 appearAnimation = true
             }
             
-            for index in 0..<3 {
+            for index in 0..<4 {
                 withAnimation(.spring(response: 0.6, dampingFraction: 0.75).delay(0.2 + Double(index) * 0.15)) {
                     cardAppear[index] = true
                 }
@@ -122,9 +169,9 @@ struct HomeView: View {
     private var greetingText: String {
         let hour = Calendar.current.component(.hour, from: Date())
         switch hour {
-        case 6..<12: return "¡Buenos días!"
-        case 12..<19: return "¡Buenas tardes!"
-        default: return "¡Buenas noches!"
+        case 6..<12: return L10n.goodMorning.localized()
+        case 12..<19: return L10n.goodAfternoon.localized()
+        default: return L10n.goodEvening.localized()
         }
     }
 }

@@ -2,6 +2,7 @@ import SwiftUI
 import AVKit
 
 struct TVView: View {
+    @StateObject private var localization = LocalizationManager.shared
     private let videoURL: URL
     @State private var player: AVPlayer
     @State private var appearAnimation = false
@@ -18,7 +19,7 @@ struct TVView: View {
             AppBackground(style: .detail)
             
             VStack(spacing: 0) {
-                AppHeaderBar(title: "TV")
+                AppHeaderBar(title: L10n.tv.localized())
                 
                 ScrollView(showsIndicators: false) {
                     VStack(spacing: 24) {
@@ -42,7 +43,7 @@ struct TVView: View {
                             }
                             
                             VStack(alignment: .leading, spacing: 4) {
-                                Text("Taber TV's")
+                                Text(L10n.tvTitle.localized())
                                     .font(.title2.weight(.bold))
                                     .foregroundStyle(Color.cobaltBlue)
                                 
@@ -50,7 +51,7 @@ struct TVView: View {
                                     Circle()
                                         .fill(Color.red)
                                         .frame(width: 8, height: 8)
-                                    Text("EN VIVO")
+                                    Text(L10n.live.localized().uppercased())
                                         .font(.caption.weight(.bold))
                                         .foregroundStyle(Color.red)
                                     
@@ -112,12 +113,12 @@ struct TVView: View {
                         VStack(spacing: 16) {
                             // Card de información
                             HStack(spacing: 12) {
-                                InfoPill(icon: "play.tv.fill", text: "Streaming")
-                                InfoPill(icon: "antenna.radiowaves.left.and.right", text: "En vivo")
-                                InfoPill(icon: "airplayvideo", text: "AirPlay")
+                                InfoPill(icon: "play.tv.fill", text: L10n.streaming.localized())
+                                InfoPill(icon: "antenna.radiowaves.left.and.right", text: L10n.live.localized())
+                                InfoPill(icon: "airplayvideo", text: L10n.airplay.localized())
                             }
                             
-                            Text("Televisión cristiana las 24 horas")
+                            Text(L10n.christianTv24.localized())
                                 .font(.subheadline)
                                 .foregroundStyle(Color.twitterBlue.opacity(0.7))
                                 .multilineTextAlignment(.center)

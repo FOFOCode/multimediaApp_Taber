@@ -1,6 +1,7 @@
 import SwiftUI
 
 struct InfoView: View {
+    @StateObject private var localization = LocalizationManager.shared
     @State private var appearAnimation = false
     
     var body: some View {
@@ -8,7 +9,7 @@ struct InfoView: View {
             AppBackground(style: .detail)
             
             VStack(spacing: 0) {
-                AppHeaderBar(title: "Información")
+                AppHeaderBar(title: L10n.infoTitle.localized())
                 
                 ScrollView(showsIndicators: false) {
                     VStack(spacing: 24) {
@@ -31,12 +32,12 @@ struct InfoView: View {
                                     .foregroundStyle(Color.aliceBlue)
                             }
                             
-                            Text("Horarios de servicios")
+                            Text(L10n.serviceSchedule.localized())
                                 .font(.system(size: 28, weight: .bold, design: .rounded))
                                 .foregroundStyle(Color.cobaltBlue)
                                 .multilineTextAlignment(.center)
                             
-                            Text("Iglesia Bautista Taber")
+                            Text(L10n.churchName.localized())
                                 .font(.subheadline.weight(.medium))
                                 .foregroundStyle(Color.twitterBlue.opacity(0.8))
                         }
@@ -47,66 +48,66 @@ struct InfoView: View {
                         // Horarios
                         VStack(spacing: 12) {
                             ServiceScheduleCard(
-                                day: "Lunes",
+                                day: L10n.monday.localized(),
                                 services: [
-                                    ServiceTime(time: "08:30 am", program: "Ayuno y Oración"),
-                                    ServiceTime(time: "06:00 pm", program: "Familias de Victoria")
+                                    ServiceTime(time: "08:30 am", program: L10n.fastingPrayer.localized()),
+                                    ServiceTime(time: "06:00 pm", program: L10n.victoryFamilies.localized())
                                 ],
                                 color: .skyBlue
                             )
                             
                             ServiceScheduleCard(
-                                day: "Martes",
+                                day: L10n.tuesday.localized(),
                                 services: [
-                                    ServiceTime(time: "05:00 pm", program: "Torre de Oración"),
-                                    ServiceTime(time: "06:00 pm", program: "Martes de Invitados")
+                                    ServiceTime(time: "05:00 pm", program: L10n.prayerTower.localized()),
+                                    ServiceTime(time: "06:00 pm", program: L10n.guestTuesday.localized())
                                 ],
                                 color: .dodgerBlue
                             )
                             
                             ServiceScheduleCard(
-                                day: "Miércoles",
+                                day: L10n.wednesday.localized(),
                                 services: [
-                                    ServiceTime(time: "06:00 am", program: "Amaneciendo con Dios"),
-                                    ServiceTime(time: "06:00 pm", program: "Noche de Estudio Bíblico")
+                                    ServiceTime(time: "06:00 am", program: L10n.dawnWithGod.localized()),
+                                    ServiceTime(time: "06:00 pm", program: L10n.bibleStudyNight.localized())
                                 ],
                                 color: .brilliantAzure
                             )
                             
                             ServiceScheduleCard(
-                                day: "Jueves",
+                                day: L10n.thursday.localized(),
                                 services: [
-                                    ServiceTime(time: "06:00 pm", program: "Noche de Adoración")
+                                    ServiceTime(time: "06:00 pm", program: L10n.worshipNight.localized())
                                 ],
                                 color: .twitterBlue
                             )
                             
                             ServiceScheduleCard(
-                                day: "Viernes",
+                                day: L10n.friday.localized(),
                                 services: [
-                                    ServiceTime(time: "05:00 pm", program: "Torre de Oración"),
-                                    ServiceTime(time: "06:00 pm", program: "Noche de Milagros")
+                                    ServiceTime(time: "05:00 pm", program: L10n.prayerTower.localized()),
+                                    ServiceTime(time: "06:00 pm", program: L10n.miracleNight.localized())
                                 ],
                                 color: .oceanDeep
                             )
                             
                             ServiceScheduleCard(
-                                day: "Sábado",
+                                day: L10n.saturday.localized(),
                                 services: [
-                                    ServiceTime(time: "03:00 pm", program: "Jóvenes JEV"),
-                                    ServiceTime(time: "05:00 pm", program: "Sábados de Milagros")
+                                    ServiceTime(time: "03:00 pm", program: L10n.youngJev.localized()),
+                                    ServiceTime(time: "05:00 pm", program: L10n.miracleSaturday.localized())
                                 ],
                                 color: .coolSky2
                             )
                             
                             ServiceScheduleCard(
-                                day: "Domingo",
+                                day: L10n.sunday.localized(),
                                 services: [
-                                    ServiceTime(time: "07:00 am", program: "Adoración y Oración"),
-                                    ServiceTime(time: "08:00 am", program: "Adoración y Oración"),
-                                    ServiceTime(time: "10:00 am", program: "Adoración y Oración"),
-                                    ServiceTime(time: "03:00 pm", program: "Adoración y Oración"),
-                                    ServiceTime(time: "04:30 pm", program: "Adoración y Oración")
+                                    ServiceTime(time: "07:00 am", program: L10n.worshipPrayer.localized()),
+                                    ServiceTime(time: "08:00 am", program: L10n.worshipPrayer.localized()),
+                                    ServiceTime(time: "10:00 am", program: L10n.worshipPrayer.localized()),
+                                    ServiceTime(time: "03:00 pm", program: L10n.worshipPrayer.localized()),
+                                    ServiceTime(time: "04:30 pm", program: L10n.worshipPrayer.localized())
                                 ],
                                 color: .dodgerBlue
                             )
@@ -120,12 +121,12 @@ struct InfoView: View {
                                     .font(.system(size: 20))
                                     .foregroundStyle(Color.twitterBlue)
                                 
-                                Text("Nuestra ubicación")
+                                Text(L10n.ourLocation.localized())
                                     .font(.headline.weight(.semibold))
                                     .foregroundStyle(Color.cobaltBlue)
                             }
                             
-                            Text("Km 67 calle by pass carretera a metapan\nruta de buses 51F")
+                            Text(L10n.locationAddress.localized())
                                 .font(.subheadline)
                                 .foregroundStyle(Color.twitterBlue.opacity(0.8))
                                 .multilineTextAlignment(.center)

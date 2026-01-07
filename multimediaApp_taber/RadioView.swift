@@ -2,6 +2,7 @@ import SwiftUI
 import AVFoundation
 
 struct RadioView: View {
+    @StateObject private var localization = LocalizationManager.shared
     private let radioURL = URL(string: "https://uk23freenew.listen2myradio.com/live.mp3?typeportmount=s1_22775_stream_247632100")!
     @State private var player: AVPlayer? = nil
     @State private var isPlaying = false
@@ -13,7 +14,7 @@ struct RadioView: View {
             AppBackground(style: .detail)
             
             VStack(spacing: 0) {
-                AppHeaderBar(title: "Radio")
+                AppHeaderBar(title: L10n.radio.localized())
                 
                 ScrollView(showsIndicators: false) {
                     VStack(spacing: 32) {
@@ -83,7 +84,7 @@ struct RadioView: View {
                         
                         // Información de la estación
                         VStack(spacing: 12) {
-                            Text("Radio Bautista")
+                            Text(L10n.radioTitle.localized())
                                 .font(.system(size: 32, weight: .bold, design: .rounded))
                                 .foregroundStyle(Color.cobaltBlue)
                             
@@ -114,7 +115,7 @@ struct RadioView: View {
                                         value: waveAnimation
                                     )
                                 
-                                Text(isPlaying ? "En vivo" : "Pausado")
+                                Text(isPlaying ? L10n.live.localized() : L10n.paused.localized())
                                     .font(.subheadline.weight(.medium))
                                     .foregroundStyle(isPlaying ? Color.green : Color.gray)
                             }
@@ -180,7 +181,7 @@ struct RadioView: View {
                         
                         // Texto informativo
                         VStack(spacing: 8) {
-                            Text(isPlaying ? "Tocá para detener" : "Tocá para reproducir")
+                            Text(isPlaying ? L10n.tapToStop.localized() : L10n.tapToPlay.localized())
                                 .font(.subheadline)
                                 .foregroundStyle(Color.twitterBlue.opacity(0.7))
                         }
