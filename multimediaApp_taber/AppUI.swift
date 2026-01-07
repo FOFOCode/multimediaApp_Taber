@@ -69,25 +69,41 @@ struct AppHeaderBar: View {
     let title: String
 
     @Environment(\.dismiss) private var dismiss
+    @State private var isPressed = false
 
     var body: some View {
         HStack(spacing: 12) {
             Button {
                 dismiss()
             } label: {
-                Image(systemName: "chevron.left")
-                    .font(.system(size: 16, weight: .semibold))
-                    .foregroundStyle(Color.cobaltBlue)
-                    .frame(width: 36, height: 36)
-                    .background(Color.aliceBlue.opacity(0.75))
-                    .clipShape(Circle())
+                ZStack {
+                    Circle()
+                        .fill(.ultraThinMaterial)
+                        .frame(width: 44, height: 44)
+                        .shadow(color: Color.cobaltBlue.opacity(0.1), radius: 8, x: 0, y: 4)
+                    
+                    Circle()
+                        .stroke(Color.aliceBlue.opacity(0.5), lineWidth: 1)
+                        .frame(width: 44, height: 44)
+                    
+                    Image(systemName: "chevron.left")
+                        .font(.system(size: 16, weight: .bold))
+                        .foregroundStyle(Color.cobaltBlue)
+                }
             }
+            .scaleEffect(isPressed ? 0.9 : 1.0)
+            .animation(.spring(response: 0.3, dampingFraction: 0.7), value: isPressed)
+            .simultaneousGesture(
+                DragGesture(minimumDistance: 0)
+                    .onChanged { _ in isPressed = true }
+                    .onEnded { _ in isPressed = false }
+            )
             .accessibilityLabel("Volver")
 
             Spacer(minLength: 0)
 
             Text(title)
-                .font(.title3.bold())
+                .font(.system(size: 20, weight: .bold, design: .rounded))
                 .foregroundStyle(Color.cobaltBlue)
                 .lineLimit(1)
                 .minimumScaleFactor(0.85)
@@ -95,11 +111,11 @@ struct AppHeaderBar: View {
             Spacer(minLength: 0)
 
             Color.clear
-                .frame(width: 36, height: 36)
+                .frame(width: 44, height: 44)
         }
         .padding(.horizontal, 16)
-        .padding(.top, 8)
-        .padding(.bottom, 6)
+        .padding(.top, 12)
+        .padding(.bottom, 8)
     }
 }
 
@@ -153,12 +169,18 @@ struct AppAVPlayerViewController: UIViewControllerRepresentable {
     let player: AVPlayer
     var showsPlaybackControls: Bool = true
     var allowsPictureInPicture: Bool = true
+    var updatesNowPlayingInfoCenter: Bool = true
 
     func makeUIViewController(context: Context) -> AVPlayerViewController {
         let controller = AVPlayerViewController()
         controller.player = player
         controller.showsPlaybackControls = showsPlaybackControls
         controller.allowsPictureInPicturePlayback = allowsPictureInPicture
+        controller.updatesNowPlayingInfoCenter = updatesNowPlayingInfoCenter
+        
+        // Configurar para que no pause automáticamente
+        controller.delegate = context.coordinator
+        
         return controller
     }
 
@@ -168,5 +190,44 @@ struct AppAVPlayerViewController: UIViewControllerRepresentable {
         }
         uiViewController.showsPlaybackControls = showsPlaybackControls
         uiViewController.allowsPictureInPicturePlayback = allowsPictureInPicture
+        uiViewController.updatesNowPlayingInfoCenter = updatesNowPlayingInfoCenter
+    }
+    
+    func makeCoordinator() -> Coordinator {
+        Coordinator(player: player)
+    }
+    
+    class Coordinator: NSObject, AVPlayerViewControllerDelegate {
+        let player: AVPlayer
+        
+        init(player: AVPlayer) {
+            self.player = player
+            super.init()
+        }
+        
+        // Reanudar reproducción después de cambios de pantalla completa
+        func playerViewController(
+            _ playerViewController: AVPlayerViewController,
+            willEndFullScreenPresentationWithAnimationCoordinator coordinator: UIViewControllerTransitionCoordinator
+        ) {
+            coordinator.animate(alongsideTransition: nil) { _ in
+                // Asegurar que sigue reproduciendo después de salir de pantalla completa
+                if self.player.timeControlStatus != .playing {
+                    self.player.play()
+                }
+            }
+        }
+        
+        func playerViewController(
+            _ playerViewController: AVPlayerViewController,
+            willBeginFullScreenPresentationWithAnimationCoordinator coordinator: UIViewControllerTransitionCoordinator
+        ) {
+            coordinator.animate(alongsideTransition: nil) { _ in
+                // Asegurar que sigue reproduciendo al entrar a pantalla completa
+                if self.player.timeControlStatus != .playing {
+                    self.player.play()
+                }
+            }
+        }
     }
 }
