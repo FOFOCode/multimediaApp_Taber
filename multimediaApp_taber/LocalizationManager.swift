@@ -66,11 +66,6 @@ enum L10n {
     static let infoSubtitle = "info_subtitle"
     static let infoDescription = "info_description"
     
-    // Bible
-    static let bibleTitle = "bible_title"
-    static let bibleSubtitle = "bible_subtitle"
-    static let bibleDescription = "bible_description"
-    
     // Estados
     static let live = "live"
     static let paused = "paused"
@@ -113,19 +108,4 @@ enum L10n {
     static let youngJev = "young_jev"
     static let miracleSaturday = "miracle_saturday"
     static let worshipPrayer = "worship_prayer"
-    
-    // Bible View
-    static let books = "books"
-    static let search = "search"
-    static let favorites = "favorites"
-    static let oldTestament = "old_testament"
-    static let newTestament = "new_testament"
-    static let chapter = "chapter"
-    static let searchPlaceholder = "search_placeholder"
-    static let noResults = "no_results"
-    static let searchPrompt = "search_prompt"
-    static let noFavorites = "no_favorites"
-    static let fontSize = "font_size"
-    static let done = "done"
-    static let errorLoadingChapter = "error_loading_chapter"
 }
