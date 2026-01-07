@@ -3,7 +3,7 @@ import SwiftUI
 struct HomeView: View {
     @StateObject private var localization = LocalizationManager.shared
     @State private var appearAnimation = false
-    @State private var cardAppear = [false, false, false, false, false]
+    @State private var cardAppear = [false, false, false, false]
     @State private var showLanguageSelector = false
     
     var body: some View {
@@ -138,19 +138,6 @@ struct HomeView: View {
                             }
                             .opacity(cardAppear[3] ? 1 : 0)
                             .offset(y: cardAppear[3] ? 0 : 30)
-                            
-                            NavigationLink(destination: YouTubeView()) {
-                                EnhancedActionCard(
-                                    icon: "play.rectangle.fill",
-                                    title: "YouTube",
-                                    subtitle: "Videos Cristianos",
-                                    description: "Himnos, alabanzas y predicaciones",
-                                    gradient: [Color.red, Color.red.opacity(0.8), Color.orange],
-                                    accentIcon: "play.circle.fill"
-                                )
-                            }
-                            .opacity(cardAppear[4] ? 1 : 0)
-                            .offset(y: cardAppear[4] ? 0 : 30)
                         }
                         .padding(.top, 10)
                         
