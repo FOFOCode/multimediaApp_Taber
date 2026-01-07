@@ -13,36 +13,12 @@ struct HomeView: View {
                 
                 ScrollView(showsIndicators: false) {
                     VStack(spacing: 32) {
-                        // Botón de idioma en la esquina superior derecha
-                        HStack {
-                            Spacer()
-                            Button {
-                                showLanguageSelector = true
-                            } label: {
-                                HStack(spacing: 6) {
-                                    Image(systemName: "globe")
-                                        .font(.system(size: 16, weight: .semibold))
-                                    Text(localization.currentLanguage.uppercased())
-                                        .font(.caption.weight(.bold))
-                                }
-                                .foregroundStyle(Color.aliceBlue)
-                                .padding(.horizontal, 12)
-                                .padding(.vertical, 8)
-                                .background(
-                                    Capsule()
-                                        .fill(.ultraThinMaterial)
-                                        .shadow(color: Color.black.opacity(0.15), radius: 4, x: 0, y: 2)
-                                )
-                            }
-                        }
-                        .padding(.horizontal, 20)
-                        .padding(.top, 10)
-                        
                         // Header con saludo dinámico
                         VStack(spacing: 12) {
                             Text(greetingText)
                                 .font(.title3.weight(.semibold))
                                 .foregroundStyle(Color.aliceBlue.opacity(0.9))
+                            
                             // Icono decorativo
                             ZStack {
                                 Circle()
@@ -64,10 +40,6 @@ struct HomeView: View {
                             .padding(.bottom, 4)
                             
                             VStack(spacing: 6) {
-                                Text(greetingText)
-                                    .font(.title3.weight(.medium))
-                                    .foregroundStyle(Color.aliceBlue.opacity(0.9))
-                                
                                 Text(L10n.appName.localized())
                                     .font(.system(size: 38, weight: .bold, design: .rounded))
                                     .foregroundStyle(Color.aliceBlue)
@@ -131,6 +103,34 @@ struct HomeView: View {
                     }
                     .padding(.horizontal, 24)
                 }
+                
+                // Botón de idioma en la esquina superior derecha
+                VStack {
+                    HStack {
+                        Spacer()
+                        Button {
+                            showLanguageSelector = true
+                        } label: {
+                            HStack(spacing: 6) {
+                                Image(systemName: "globe")
+                                    .font(.system(size: 16, weight: .semibold))
+                                Text(localization.currentLanguage.uppercased())
+                                    .font(.caption.weight(.bold))
+                            }
+                            .foregroundStyle(Color.aliceBlue)
+                            .padding(.horizontal, 12)
+                            .padding(.vertical, 8)
+                            .background(
+                                Capsule()
+                                    .fill(.ultraThinMaterial)
+                                    .shadow(color: Color.black.opacity(0.15), radius: 4, x: 0, y: 2)
+                            )
+                        }
+                        .padding(.trailing, 20)
+                    }
+                    Spacer()
+                }
+                .padding(.top, 10)
             }
             .toolbar(.hidden, for: .navigationBar)
         }
