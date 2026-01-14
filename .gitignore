@@ -1,0 +1,72 @@
+# macOS
+.DS_Store
+.AppleDouble
+.LSOverride
+*.swp
+*.swo
+*~
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+
+# Xcode
+build/
+DerivedData/
+*.pbxuser
+*.mode1v3
+*.mode2v3
+*.perspectivev3
+*.xcworkspace/xcuserdata/
+*.xcodeproj/xcuserdata/
+*.xcodeproj/project.xcworkspace/xcuserdata/
+*.playground
+xcuserdata/
+*.xccheckout
+*.moved-aside
+*.xcconfig
+*.xcscmblueprint
+
+# Swift
+.swift-format
+.swiftpm
+.build/
+*.swiftpm
+
+# CocoaPods
+Pods/
+Podfile.lock
+*.podspec.lock
+Cartfile.resolved
+
+# Fastlane
+fastlane/report.xml
+fastlane/screenshots
+fastlane/Preview.html
+
+# Testing
+.coverage
+.test-reports/
+
+# IDEs
+.idea/
+.vscode/
+*.iml
+.gradle
+local.properties
+
+# Environment
+.env
+.env.local
+
+# Temporary files
+*.tmp
+*.bak
+*.orig
+
+# Distribution
+*.ipa
+*.app
+
+# Archive
+*.zip

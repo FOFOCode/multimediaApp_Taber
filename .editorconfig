@@ -1,0 +1,41 @@
+# EditorConfig is awesome: https://EditorConfig.org
+
+# top-most EditorConfig file
+root = true
+
+# Configuración general para todos los archivos
+[*]
+charset = utf-8
+insert_final_newline = true
+trim_trailing_whitespace = true
+indent_style = space
+
+# Archivos Swift
+[*.swift]
+indent_size = 4
+max_line_length = 120
+
+# Archivos JSON
+[*.json]
+indent_size = 2
+
+# Archivos YAML
+[*.{yml,yaml}]
+indent_size = 2
+
+# Archivos Markdown
+[*.md]
+trim_trailing_whitespace = false
+max_line_length = off
+
+# Archivos de configuración
+[*.{toml,ini,cfg}]
+indent_size = 2
+
+# Xcode project files
+[*.pbxproj]
+indent_size = 4
+
+# Shell scripts
+[*.{sh,bash}]
+indent_size = 2
