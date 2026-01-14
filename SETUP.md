@@ -96,6 +96,7 @@ Error: MultiMediaApp.xcodeproj: No such file or directory
 ```
 
 **Solución:**
+
 - Asegúrate de estar en el directorio correcto
 - Verifica que el archivo `multimediaApp_taber.xcodeproj` existe
 - Usa `pwd` para confirmar tu ubicación
@@ -107,6 +108,7 @@ API Key inválida o no autorizada
 ```
 
 **Solución:**
+
 1. Verifica que copiaste la API Key correctamente
 2. Asegúrate de que no hay espacios al principio o final
 3. Regenera la API Key en el dashboard de API.Bible
@@ -115,6 +117,7 @@ API Key inválida o no autorizada
 ### Error: "Build Failed"
 
 **Soluciones comunes:**
+
 1. Limpia el build: `Cmd + Shift + K`
 2. Elimina carpeta de derivados: `rm -rf ~/Library/Developer/Xcode/DerivedData/*`
 3. Cierra Xcode y vuelve a abrir
@@ -123,6 +126,7 @@ API Key inválida o no autorizada
 ### La app se congela al cargar la Biblia
 
 **Soluciones:**
+
 1. Verifica tu conexión a Internet
 2. Comprueba que la API Key esté configurada correctamente
 3. Revisa la consola de Xcode (View > Debug Area > Show Debug Area) para ver errores
@@ -184,6 +188,7 @@ Usuario
 ### Debugging
 
 Usa la consola de Xcode (View > Debug Area > Show Debug Area) para:
+
 - Ver logs: `print("Debug message")`
 - Inspeccionar variables durante pausa en breakpoints
 - Monitorear performance

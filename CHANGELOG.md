@@ -8,6 +8,7 @@ y este proyecto adhiere a [Semantic Versioning](https://semver.org/lang/es/).
 ## [1.0.0] - 2026-01-14
 
 ### ✨ Agregado
+
 - Lectura completa de la Biblia con múltiples versiones
 - Soporte para español e inglés
 - Sistema de favoritos local con persistencia
@@ -21,19 +22,23 @@ y este proyecto adhiere a [Semantic Versioning](https://semver.org/lang/es/).
 - Información del proyecto
 
 ### 🔧 Cambios
+
 - Integración con API.Bible para obtener contenido bíblico
 - Sistema de localización robusto
 
 ### 🐛 Corregido
+
 - Manejo de errores de red mejorado
 - Caché de datos para mejor rendimiento
 
 ### 🔐 Seguridad
+
 - API Key protegida en BibleService
 
 ## [En desarrollo]
 
 ### 🔜 Próximas características
+
 - Sincronización en la nube de favoritos
 - Audio de versículos
 - Notas y destacados personalizados

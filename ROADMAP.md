@@ -7,6 +7,7 @@ Este documento describe la visión y el plan de desarrollo futuro para Multimedi
 Estado: ✅ Lanzado
 
 ### Características Implementadas
+
 - ✅ Lectura de Biblia (múltiples versiones)
 - ✅ Sistema de favoritos
 - ✅ Soporte multiidioma (español, inglés)
@@ -18,9 +19,11 @@ Estado: ✅ Lanzado
 ---
 
 ## 🎯 Versión 1.1.0 - Audio & Mejoras UI
+
 **Estimado**: Q2 2026
 
 ### Características Planeadas
+
 - [ ] 🔊 Reproducción de audio de versículos
 - [ ] 📚 Notas personalizadas en versículos
 - [ ] ⭐ Destacados y subrayados
@@ -29,6 +32,7 @@ Estado: ✅ Lanzado
 - [ ] 🔍 Búsqueda avanzada
 
 ### Tareas
+
 - [ ] Integrar motor de audio
 - [ ] Diseñar UI para notas
 - [ ] Mejorar sistema de temas
@@ -37,9 +41,11 @@ Estado: ✅ Lanzado
 ---
 
 ## 🎯 Versión 1.2.0 - Sincronización
+
 **Estimado**: Q3 2026
 
 ### Características Planeadas
+
 - [ ] ☁️ Sincronización en la nube (iCloud)
 - [ ] 📱 Multi-dispositivo
 - [ ] 💾 Backup automático
@@ -47,6 +53,7 @@ Estado: ✅ Lanzado
 - [ ] 🌐 Sincronización de progreso de lectura
 
 ### Tareas
+
 - [ ] Configurar CloudKit
 - [ ] Arquitectura de sincronización
 - [ ] Tests de sincronización
@@ -55,9 +62,11 @@ Estado: ✅ Lanzado
 ---
 
 ## 🎯 Versión 1.3.0 - Planes de Lectura
+
 **Estimado**: Q4 2026
 
 ### Características Planeadas
+
 - [ ] 📅 Planes de lectura diaria
 - [ ] 🎯 Planes temáticos
 - [ ] 📈 Seguimiento de progreso
@@ -66,6 +75,7 @@ Estado: ✅ Lanzado
 - [ ] 📊 Estadísticas personales
 
 ### Tareas
+
 - [ ] Diseñar planes predefinidos
 - [ ] Sistema de notificaciones
 - [ ] Gamificación básica
@@ -74,9 +84,11 @@ Estado: ✅ Lanzado
 ---
 
 ## 🚀 Versión 2.0.0 - Comunidad
+
 **Estimado**: 2027 Q1-Q2
 
 ### Características Planeadas (Tentativo)
+
 - [ ] 👥 Comunidad de usuarios
 - [ ] 💬 Compartir versículos con amigos
 - [ ] 📝 Grupos de estudio
@@ -84,6 +96,7 @@ Estado: ✅ Lanzado
 - [ ] 🌍 Múltiples idiomas adicionales
 
 ### Tareas
+
 - [ ] Backend para comunidad
 - [ ] Sistema de mensajería
 - [ ] Moderación de contenido
@@ -96,24 +109,28 @@ Estado: ✅ Lanzado
 Estos ítems se implementarán según la prioridad y feedback:
 
 ### UI/UX
+
 - [ ] Optimización de animaciones
 - [ ] Accesibilidad mejorada (VoiceOver)
 - [ ] Adaptación para iPad
 - [ ] Orientación horizontal
 
 ### Performance
+
 - [ ] Caché más inteligente
 - [ ] Lazy loading mejorado
 - [ ] Reducción de bundle size
 - [ ] Optimización de memoria
 
 ### Testing
+
 - [ ] Cobertura de tests aumentada
 - [ ] Tests de UI automatizados
 - [ ] Testing de performance
 - [ ] Testing de accesibilidad
 
 ### DevOps
+
 - [ ] CI/CD pipeline
 - [ ] Automated releases
 - [ ] Beta testing program
@@ -124,6 +141,7 @@ Estos ítems se implementarán según la prioridad y feedback:
 ## 🐛 Bugs Conocidos
 
 ### Versión Actual
+
 - Ninguno reportado en 1.0.0
 
 ---

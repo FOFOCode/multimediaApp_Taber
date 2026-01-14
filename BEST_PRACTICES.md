@@ -12,42 +12,42 @@ import SwiftUI
 
 /// Descripción de la clase
 class MinServicio: ObservableObject {
-    
+
     // MARK: - Tipos Internos
-    
+
     enum Estado {
         case cargando
         case completado
         case error
     }
-    
+
     // MARK: - Propiedades Estáticas
-    
+
     static let shared = MinServicio()
-    
+
     // MARK: - Propiedades Publicadas (SwiftUI)
-    
+
     @Published var estado = Estado.completado
     @Published var datos: [String] = []
-    
+
     // MARK: - Propiedades Privadas
-    
+
     private let apiKey = "..."
     private var cancellables = Set<AnyCancellable>()
-    
+
     // MARK: - Inicializadores
-    
+
     private init() {}
-    
+
     // MARK: - Métodos Públicos
-    
+
     func cargarDatos() async throws {
         estado = .cargando
         // ...
     }
-    
+
     // MARK: - Métodos Privados
-    
+
     private func procesarDatos(_ datos: [String]) {
         // ...
     }
@@ -62,20 +62,20 @@ extension MinServicio {
 
 ### 1.2 Convenciones de Nombramiento
 
-| Elemento | Convención | Ejemplo |
-|----------|-----------|---------|
-| Clases | PascalCase | `BibleService`, `HomeView` |
-| Estructuras | PascalCase | `BibleModels`, `ChapterData` |
-| Funciones | camelCase | `fetchChapter()`, `loadData()` |
-| Variables | camelCase | `currentBible`, `isLoading` |
-| Constantes | camelCase | `apiKey`, `baseURL` |
-| Enums | PascalCase | `BibleError`, `ViewState` |
-| Enum casos | camelCase | `.invalidURL`, `.networkError` |
-| Métodos privados | camelCase | `_processData()`, `_validateInput()` |
+| Elemento         | Convención | Ejemplo                              |
+| ---------------- | ---------- | ------------------------------------ |
+| Clases           | PascalCase | `BibleService`, `HomeView`           |
+| Estructuras      | PascalCase | `BibleModels`, `ChapterData`         |
+| Funciones        | camelCase  | `fetchChapter()`, `loadData()`       |
+| Variables        | camelCase  | `currentBible`, `isLoading`          |
+| Constantes       | camelCase  | `apiKey`, `baseURL`                  |
+| Enums            | PascalCase | `BibleError`, `ViewState`            |
+| Enum casos       | camelCase  | `.invalidURL`, `.networkError`       |
+| Métodos privados | camelCase  | `_processData()`, `_validateInput()` |
 
 ### 1.3 Documentación con DocComments
 
-```swift
+````swift
 /// Obtiene un capítulo de la Biblia
 ///
 /// Realiza una solicitud HTTP a la API.Bible y decodifica
@@ -102,7 +102,7 @@ extension MinServicio {
 func fetchChapter(bibleId: String, chapterId: String) async throws -> Chapter {
     // Implementación
 }
-```
+````
 
 ## 2. SwiftUI Best Practices
 
@@ -111,18 +111,18 @@ func fetchChapter(bibleId: String, chapterId: String) async throws -> Chapter {
 ```swift
 struct MinVista: View {
     // MARK: - @State y @StateObject
-    
+
     @State private var contador = 0
     @StateObject private var viewModel = MinViewModel()
-    
+
     // MARK: - Propiedades Locales
-    
+
     private var esMayorQueCinco: Bool {
         contador > 5
     }
-    
+
     // MARK: - Body
-    
+
     var body: some View {
         VStack(spacing: 16) {
             // Contenido principal
@@ -131,18 +131,18 @@ struct MinVista: View {
             cargarDatos()
         }
     }
-    
+
     // MARK: - Subvistas
-    
+
     @ViewBuilder
     private var encabezado: some View {
         HStack {
             // ...
         }
     }
-    
+
     // MARK: - Métodos Privados
-    
+
     private func cargarDatos() {
         // ...
     }
@@ -157,7 +157,7 @@ class ViewModel: ObservableObject {
     @Published var titulo: String = ""
     @Published var isLoading = false
     @Published var items: [Item] = []
-    
+
     // ❌ INCORRECTO: No uses @Published para propiedades privadas
     private var contador = 0  // Esto está bien
 }
@@ -169,7 +169,7 @@ class ViewModel: ObservableObject {
 // ✅ CORRECTO: Crea el observable en el padre
 struct ContentView: View {
     @StateObject private var viewModel = BibleViewModel()
-    
+
     var body: some View {
         BibleView()
             .environmentObject(viewModel)
@@ -194,15 +194,15 @@ class BibleViewModel: ObservableObject {
     @Published var capitulo: Chapter?
     @Published var isLoading = false
     @Published var errorMessage: String?
-    
+
     func cargarCapitulo(id: String) {
         isLoading = true
         errorMessage = nil
-        
+
         Task {
             do {
                 let cap = try await BibleService.shared.fetchChapter(id: id)
-                
+
                 await MainActor.run {
                     self.capitulo = cap
                     self.isLoading = false
@@ -225,7 +225,7 @@ class BibleViewModel: ObservableObject {
 @MainActor
 class ViewModel: ObservableObject {
     @Published var datos: String = ""
-    
+
     func cargar() async {
         let resultado = await fetchDatos()
         self.datos = resultado  // Ya estamos en MainActor
@@ -247,7 +247,7 @@ enum MiError: LocalizedError {
     case invalidInput(String)
     case networkError(Error)
     case decodingError
-    
+
     var errorDescription: String? {
         switch self {
         case .invalidInput(let campo):
@@ -267,11 +267,11 @@ enum MiError: LocalizedError {
 func fetchData() async throws -> Data {
     do {
         let (data, response) = try await URLSession.shared.data(from: url)
-        
+
         guard let httpResponse = response as? HTTPURLResponse else {
             throw AppError.invalidResponse
         }
-        
+
         switch httpResponse.statusCode {
         case 200:
             return data
@@ -296,28 +296,28 @@ func fetchData() async throws -> Data {
 import XCTest
 
 final class BibleServiceTests: XCTestCase {
-    
+
     var sut: BibleService!  // sut = System Under Test
-    
+
     override func setUp() {
         super.setUp()
         sut = BibleService()
     }
-    
+
     override func tearDown() {
         sut = nil
         super.tearDown()
     }
-    
+
     // MARK: - Tests
-    
+
     func test_fetchBooks_withValidId_returnsBooks() async throws {
         // Arrange
         let bibleId = "592420522e16049f-01"
-        
+
         // Act
         let books = try await sut.fetchBooks(bibleId: bibleId)
-        
+
         // Assert
         XCTAssertFalse(books.isEmpty)
     }
@@ -344,7 +344,7 @@ func test_fetchBooks() { }
 // ✅ CORRECTO: Extrae subvistas para evitar re-renders
 struct ParentView: View {
     @State var contador = 0
-    
+
     var body: some View {
         VStack {
             Contador(contador: $contador)
@@ -356,7 +356,7 @@ struct ParentView: View {
 // ❌ INCORRECTO: Todo se re-renderiza
 struct ParentView: View {
     @State var contador = 0
-    
+
     var body: some View {
         VStack {
             Text("\(contador)")
@@ -373,7 +373,7 @@ struct ParentView: View {
 ```swift
 struct ListaGrande: View {
     @State var items: [Item] = []
-    
+
     var body: some View {
         List {
             ForEach(items, id: \.id) { item in
