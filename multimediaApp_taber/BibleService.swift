@@ -1,29 +1,84 @@
 import Foundation
 import Combine
 
+/// Servicio para gestionar acceso a contenido bíblico mediante API.Bible
+/// 
+/// BibleService proporciona métodos para:
+/// - Obtener Biblias disponibles en diferentes idiomas
+/// - Recuperar libros de una Biblia específica
+/// - Leer capítulos completos
+/// - Buscar versículos específicos
+/// 
+/// Este es un singleton que mantiene el estado actual de la Biblia y proporciona
+/// propiedades publicadas para actualizar la UI en tiempo real.
+/// 
+/// **Configuración requerida:**
+/// 1. Regístrate en https://scripture.api.bible
+/// 2. Obtén tu API Key
+/// 3. Reemplaza `apiKey` con tu clave personal
+/// 
+/// Ejemplo de uso:
+/// ```swift
+/// let service = BibleService.shared
+/// let bibles = try await service.fetchBibles(language: "es")
+/// let books = try await service.fetchBooks(bibleId: bibles[0].id)
+/// ```
 class BibleService: ObservableObject {
     static let shared = BibleService()
     
-    // API Key de API.Bible - Necesitarás registrarte en https://scripture.api.bible para obtener una
+    // MARK: - Configuration
+    
+    /// API Key de API.Bible - Requiere registro en https://scripture.api.bible
+    /// ⚠️ Importante: Reemplaza con tu propia API Key
     private let apiKey = "lB1S138vRr8WXNuj88_f2"
+    
+    /// URL base para todas las solicitudes API
     private let baseURL = "https://rest.api.bible/v1"
     
+    // MARK: - Published Properties
+    
+    /// Array de Biblias disponibles en el idioma actual
     @Published var availableBibles: [Bible] = []
+    
+    /// Biblia actualmente seleccionada
     @Published var currentBible: Bible?
+    
+    /// Libros de la Biblia actual
     @Published var books: [Book] = []
+    
+    /// Indica si se está realizando una solicitud a la API
     @Published var isLoading = false
+    
+    /// Mensaje de error de la última operación (si la hay)
     @Published var errorMessage: String?
     
-    // IDs de Biblias recomendadas
-    private let spanishBibleId = "592420522e16049f-01" // Reina Valera 1909
-    private let englishBibleId = "de4e12af7f28f599-02" // King James Version
+    // MARK: - Private Properties
     
+    /// IDs de Biblias recomendadas por idioma
+    private let spanishBibleId = "592420522e16049f-01"    // Reina Valera 1909
+    private let englishBibleId = "de4e12af7f28f599-02"    // King James Version
+    
+    /// Conjunto de subscripciones de Combine
     private var cancellables = Set<AnyCancellable>()
     
+    // MARK: - Initialization
+    
+    /// Inicializa el servicio (singleton)
     private init() {}
     
     // MARK: - Get Available Bibles
     
+    /// Obtiene una lista de Biblias disponibles en el idioma especificado
+    ///
+    /// - Parameters:
+    ///   - language: Código de idioma ISO (ej: "spa" para español, "eng" para inglés)
+    /// - Returns: Array de Biblias disponibles en el idioma
+    /// - Throws: `BibleError` si la solicitud falla
+    ///
+    /// Ejemplo:
+    /// ```swift
+    /// let spanishBibles = try await service.fetchBibles(language: "spa")
+    /// ```
     func fetchBibles(language: String = "spa") async throws -> [Bible] {
         let urlString = "\(baseURL)/bibles?language=\(language)"
         
@@ -51,6 +106,17 @@ class BibleService: ObservableObject {
     
     // MARK: - Get Books
     
+    /// Obtiene todos los libros de la Biblia especificada
+    ///
+    /// - Parameters:
+    ///   - bibleId: Identificador único de la Biblia
+    /// - Returns: Array de libros de la Biblia
+    /// - Throws: `BibleError` si la solicitud falla o API Key no está configurada
+    ///
+    /// Ejemplo:
+    /// ```swift
+    /// let books = try await service.fetchBooks(bibleId: "592420522e16049f-01")
+    /// ```
     func fetchBooks(bibleId: String) async throws -> [Book] {
         // Verificar que la API key esté configurada
         guard apiKey != "TU_API_KEY_AQUI" && !apiKey.isEmpty else {
@@ -97,6 +163,21 @@ class BibleService: ObservableObject {
     
     // MARK: - Get Chapter
     
+    /// Obtiene el contenido completo de un capítulo específico
+    ///
+    /// - Parameters:
+    ///   - bibleId: Identificador de la Biblia
+    ///   - chapterId: Identificador del capítulo
+    /// - Returns: Datos del capítulo incluyendo versículos y contenido
+    /// - Throws: `BibleError` si la solicitud falla
+    ///
+    /// Ejemplo:
+    /// ```swift
+    /// let chapter = try await service.fetchChapter(
+    ///     bibleId: "592420522e16049f-01",
+    ///     chapterId: "GEN.1"
+    /// )
+    /// ```
     func fetchChapter(bibleId: String, chapterId: String) async throws -> ChapterAPIResponse.ChapterData {
         guard apiKey != "TU_API_KEY_AQUI" && !apiKey.isEmpty else {
             throw BibleError.apiKeyNotConfigured
@@ -132,6 +213,21 @@ class BibleService: ObservableObject {
     
     // MARK: - Search
     
+    /// Busca versículos que coincidan con una consulta específica
+    ///
+    /// - Parameters:
+    ///   - bibleId: Identificador de la Biblia
+    ///   - query: Texto a buscar (ej: "amor", "fe", "esperanza")
+    /// - Returns: Array de resultados de búsqueda con versículos que coinciden
+    /// - Throws: `BibleError` si la solicitud falla
+    ///
+    /// Ejemplo:
+    /// ```swift
+    /// let results = try await service.searchVerses(
+    ///     bibleId: "592420522e16049f-01",
+    ///     query: "amor"
+    /// )
+    /// ```
     func searchVerses(bibleId: String, query: String) async throws -> [SearchAPIResponse.VerseResult] {
         guard apiKey != "TU_API_KEY_AQUI" && !apiKey.isEmpty else {
             throw BibleError.apiKeyNotConfigured
@@ -168,10 +264,30 @@ class BibleService: ObservableObject {
     
     // MARK: - Helper Methods
     
+    /// Obtiene el ID de Biblia correspondiente al código de idioma
+    ///
+    /// - Parameters:
+    ///   - languageCode: Código de idioma ("es" para español, otro para inglés)
+    /// - Returns: ID de Biblia recomendada para el idioma
     func getBibleForLanguage(_ languageCode: String) -> String {
         return languageCode == "es" ? spanishBibleId : englishBibleId
     }
     
+    /// Carga datos de la Biblia (libros) de forma asíncrona
+    ///
+    /// Actualiza automáticamente las propiedades publicadas:
+    /// - `books`: Se rellena con los libros disponibles
+    /// - `isLoading`: Indica si se está cargando
+    /// - `errorMessage`: Contiene cualquier error que ocurra
+    ///
+    /// - Parameters:
+    ///   - language: Código de idioma ("es", "en", etc.)
+    ///
+    /// Ejemplo:
+    /// ```swift
+    /// service.loadBibleData(language: "es")
+    /// // Los datos se cargan de forma asíncrona y se actualiza @Published
+    /// ```
     func loadBibleData(language: String) {
         isLoading = true
         errorMessage = nil
@@ -195,16 +311,32 @@ class BibleService: ObservableObject {
     }
 }
 
-// MARK: - Errors
+// MARK: - Bible Errors
 
+/// Enumeración de errores que pueden ocurrir al acceder a la API de Biblia
 enum BibleError: LocalizedError {
+    /// URL inválida
     case invalidURL
+    
+    /// Respuesta inválida del servidor
     case invalidResponse(String)
+    
+    /// Error al decodificar JSON
     case decodingError(String)
+    
+    /// Error de conectividad
     case networkError(Error)
+    
+    /// API Key no configurada o vacía
     case apiKeyNotConfigured
+    
+    /// Credenciales no autorizadas (401)
     case unauthorized
+    
+    /// Acceso prohibido (403)
     case forbidden
+    
+    /// Recurso no encontrado (404)
     case notFound
     
     var errorDescription: String? {
