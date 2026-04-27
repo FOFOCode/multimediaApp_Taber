@@ -2,9 +2,9 @@ import SwiftUI
 
 struct ChaptersView: View {
     let book: Book
-    @StateObject private var localization = LocalizationManager.shared
-    @StateObject private var bibleService = BibleService.shared
-    @StateObject private var offlineService = OfflineBibleService.shared
+    @ObservedObject private var localization = LocalizationManager.shared
+    @ObservedObject private var bibleService = BibleService.shared
+    @ObservedObject private var offlineService = OfflineBibleService.shared
     @State private var appearAnimation = false
     @State private var chapters: [Chapter] = []
     @State private var isLoading = true
@@ -101,7 +101,7 @@ struct ChaptersView: View {
 
 struct ChapterButton: View {
     let chapter: Chapter
-    @StateObject private var offlineService = OfflineBibleService.shared
+    @ObservedObject private var offlineService = OfflineBibleService.shared
     
     var body: some View {
         ZStack {

@@ -3,7 +3,7 @@ import AVFoundation
 import Combine
 
 struct RadioView: View {
-    @StateObject private var localization = LocalizationManager.shared
+    @ObservedObject private var localization = LocalizationManager.shared
     private let radioURL = URL(string: "https://uk5freenew.listen2myradio.com/live.mp3?typeportmount=s1_39762_stream_848017234")!
     @State private var player: AVPlayer? = nil
     @State private var isPlaying = false

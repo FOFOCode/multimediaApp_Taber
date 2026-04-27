@@ -1,8 +1,8 @@
 import SwiftUI
 
 struct BibleOfflineSettingsView: View {
-    @StateObject private var offlineService = OfflineBibleService.shared
-    @StateObject private var bibleService = BibleService.shared
+    @ObservedObject private var offlineService = OfflineBibleService.shared
+    @ObservedObject private var bibleService = BibleService.shared
     @Environment(\.dismiss) private var dismiss
     @State private var isPressed = false
 

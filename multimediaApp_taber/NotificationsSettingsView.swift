@@ -1,7 +1,7 @@
 import SwiftUI
 
 struct NotificationsSettingsView: View {
-    @StateObject private var notificationService = NotificationService.shared
+    @ObservedObject private var notificationService = NotificationService.shared
     @Environment(\.dismiss) private var dismiss
     @State private var showingAddSheet = false
     @State private var editingNotification: ChurchNotification?

@@ -16,7 +16,7 @@ import Combine
 ///
 /// Ejemplo de uso:
 /// ```swift
-/// @StateObject private var localization = LocalizationManager.shared
+/// @ObservedObject private var localization = LocalizationManager.shared
 ///
 /// Button("Español") {
 ///     localization.changeLanguage(to: "es")

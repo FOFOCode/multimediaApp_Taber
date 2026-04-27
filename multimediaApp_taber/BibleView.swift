@@ -1,10 +1,10 @@
 import SwiftUI
 
 struct BibleView: View {
-    @StateObject private var localization = LocalizationManager.shared
-    @StateObject private var bibleService = BibleService.shared
-    @StateObject private var favoritesService = FavoritesService.shared
-    @StateObject private var offlineService = OfflineBibleService.shared
+    @ObservedObject private var localization = LocalizationManager.shared
+    @ObservedObject private var bibleService = BibleService.shared
+    @ObservedObject private var favoritesService = FavoritesService.shared
+    @ObservedObject private var offlineService = OfflineBibleService.shared
     @State private var appearAnimation = false
     @State private var selectedTab = 0
     @State private var searchText = ""
@@ -130,8 +130,8 @@ var body: some View {
 // MARK: - Books List View
 
 struct BooksListView: View {
-    @StateObject private var bibleService = BibleService.shared
-    @StateObject private var localization = LocalizationManager.shared
+    @ObservedObject private var bibleService = BibleService.shared
+    @ObservedObject private var localization = LocalizationManager.shared
     
     var oldTestament: [Book] {
         Array(bibleService.books.prefix(39))
@@ -249,8 +249,8 @@ struct BookCard: View {
 // MARK: - Search View
 
 struct SearchView: View {
-    @StateObject private var bibleService = BibleService.shared
-    @StateObject private var localization = LocalizationManager.shared
+    @ObservedObject private var bibleService = BibleService.shared
+    @ObservedObject private var localization = LocalizationManager.shared
     @State private var searchText = ""
     @State private var searchResults: [SearchAPIResponse.VerseResult] = []
     @State private var isSearching = false
@@ -303,7 +303,7 @@ struct SearchView: View {
                 .padding(40)
             } else if !searchResults.isEmpty {
                 ScrollView {
-                    VStack(spacing: 12) {
+                    LazyVStack(spacing: 12) {
                         ForEach(searchResults, id: \.id) { result in
                             SearchResultCard(result: result)
                         }
@@ -353,7 +353,7 @@ struct SearchView: View {
 
 struct SearchResultCard: View {
     let result: SearchAPIResponse.VerseResult
-    @StateObject private var favoritesService = FavoritesService.shared
+    @ObservedObject private var favoritesService = FavoritesService.shared
     
     var body: some View {
         VStack(alignment: .leading, spacing: 8) {
@@ -398,8 +398,8 @@ struct SearchResultCard: View {
 // MARK: - Favorites List View
 
 struct FavoritesListView: View {
-    @StateObject private var favoritesService = FavoritesService.shared
-    @StateObject private var localization = LocalizationManager.shared
+    @ObservedObject private var favoritesService = FavoritesService.shared
+    @ObservedObject private var localization = LocalizationManager.shared
     
     var body: some View {
         VStack(spacing: 16) {
@@ -416,7 +416,7 @@ struct FavoritesListView: View {
                 .padding(40)
             } else {
                 ScrollView {
-                    VStack(spacing: 12) {
+                    LazyVStack(spacing: 12) {
                         ForEach(favoritesService.favorites) { favorite in
                             FavoriteCard(favorite: favorite)
                         }
@@ -432,7 +432,7 @@ struct FavoritesListView: View {
 
 struct FavoriteCard: View {
     let favorite: FavoriteVerse
-    @StateObject private var favoritesService = FavoritesService.shared
+    @ObservedObject private var favoritesService = FavoritesService.shared
     
     var body: some View {
         VStack(alignment: .leading, spacing: 8) {

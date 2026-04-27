@@ -44,9 +44,9 @@ struct ReaderView: View {
     let bookName: String
     let chapter: Chapter
     
-    @StateObject private var localization = LocalizationManager.shared
-    @StateObject private var bibleService = BibleService.shared
-    @StateObject private var offlineService = OfflineBibleService.shared
+    @ObservedObject private var localization = LocalizationManager.shared
+    @ObservedObject private var bibleService = BibleService.shared
+    @ObservedObject private var offlineService = OfflineBibleService.shared
     @State private var appearAnimation = false
     @State private var verses: [VerseItem] = []
     @State private var isLoading = true
@@ -85,7 +85,7 @@ struct ReaderView: View {
                                     .scaleEffect(1.5)
                                     .padding(40)
                             } else {
-                                VStack(alignment: .leading, spacing: 0) {
+                                LazyVStack(alignment: .leading, spacing: 0) {
                                     ForEach(verses) { verse in
                                         VerseRow(
                                             verse: verse,

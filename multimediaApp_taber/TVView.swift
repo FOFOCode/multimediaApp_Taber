@@ -4,7 +4,7 @@ import AVFoundation
 import Combine
 
 struct TVView: View {
-    @StateObject private var localization = LocalizationManager.shared
+    @ObservedObject private var localization = LocalizationManager.shared
     private let videoURL = URL(string: "https://live20.bozztv.com/akamaissh101/ssh101/tabertv2024/chunks.m3u8")!
     @State private var player: AVPlayer?
     @State private var playerItem: AVPlayerItem?
@@ -256,7 +256,10 @@ struct TVView: View {
     }
     
     private func stopPlayback() {
+        shouldPlay = false
         player?.pause()
+        player = nil
+        playerItem = nil
         HomeDashboardService.shared.endMediaSession(source: "tv")
     }
 }

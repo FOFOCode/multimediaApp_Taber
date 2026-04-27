@@ -1,8 +1,8 @@
 import SwiftUI
 
 struct HomeView: View {
-    @StateObject private var dashboard = HomeDashboardService.shared
-    @StateObject private var localization = LocalizationManager.shared
+    @ObservedObject private var dashboard = HomeDashboardService.shared
+    @ObservedObject private var localization = LocalizationManager.shared
     @State private var appearAnimation = false
     @AppStorage("isDarkMode") private var isDarkMode = false
 

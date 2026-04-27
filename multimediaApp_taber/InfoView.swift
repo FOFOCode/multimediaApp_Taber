@@ -1,7 +1,7 @@
 import SwiftUI
 
 struct InfoView: View {
-    @StateObject private var localization = LocalizationManager.shared
+    @ObservedObject private var localization = LocalizationManager.shared
     @State private var appearAnimation = false
     
     var body: some View {
