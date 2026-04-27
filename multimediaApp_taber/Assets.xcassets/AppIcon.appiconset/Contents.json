@@ -75,12 +75,6 @@
     {
       "idiom" : "universal",
       "platform" : "ios",
-      "scale" : "2x",
-      "size" : "68x68"
-    },
-    {
-      "idiom" : "universal",
-      "platform" : "ios",
       "scale" : "1x",
       "size" : "68x68"
     },
@@ -88,12 +82,18 @@
       "idiom" : "universal",
       "platform" : "ios",
       "scale" : "2x",
+      "size" : "68x68"
+    },
+    {
+      "idiom" : "universal",
+      "platform" : "ios",
+      "scale" : "1x",
       "size" : "76x76"
     },
     {
       "idiom" : "universal",
       "platform" : "ios",
-      "scale" : "1x",
+      "scale" : "2x",
       "size" : "76x76"
     },
     {
@@ -103,6 +103,7 @@
       "size" : "83.5x83.5"
     },
     {
+      "filename" : "iconTaberR 1.jpg",
       "idiom" : "universal",
       "platform" : "ios",
       "size" : "1024x1024"
