@@ -1,4 +1,5 @@
 import SwiftUI
+import SwiftData
 
 // MARK: - Reading Theme
 
@@ -47,6 +48,13 @@ struct ReaderView: View {
     @ObservedObject private var localization = LocalizationManager.shared
     @ObservedObject private var bibleService = BibleService.shared
     @ObservedObject private var offlineService = OfflineBibleService.shared
+    @ObservedObject private var favoritesService = FavoritesService.shared
+    
+    @Environment(\.modelContext) private var modelContext
+    @Query private var studyData: [VerseStudyData]
+    @State private var selectedVerseForNote: String?
+    @State private var noteDraft: String = ""
+    
     @State private var appearAnimation = false
     @State private var verses: [VerseItem] = []
     @State private var isLoading = true
@@ -61,7 +69,37 @@ struct ReaderView: View {
             AppBackground(style: .detail)
             
             VStack(spacing: 0) {
-                AppHeaderBar(title: chapter.reference)
+                AppHeaderBar(
+                    title: chapter.reference,
+                    trailingButton: AnyView(
+                        Button {
+                            // Añadimos vibración sutil para feedback
+                            let generator = UIImpactFeedbackGenerator(style: .medium)
+                            generator.impactOccurred()
+                            
+                            withAnimation(.spring(response: 0.3, dampingFraction: 0.6)) {
+                                let isFav = favoritesService.isFavorite(id: chapter.id)
+                                if isFav {
+                                    favoritesService.removeFavorite(id: chapter.id)
+                                } else {
+                                    let previewText = verses.prefix(3).map { $0.text }.joined(separator: " ")
+                                    favoritesService.addFavorite(
+                                        id: chapter.id,
+                                        reference: chapter.reference,
+                                        text: previewText.isEmpty ? L10n.chapter.localized() : previewText + "...",
+                                        bookName: bookName
+                                    )
+                                }
+                            }
+                        } label: {
+                            Image(systemName: favoritesService.isFavorite(id: chapter.id) ? "heart.fill" : "heart")
+                                .font(.system(size: 20, weight: .bold))
+                                .foregroundStyle(favoritesService.isFavorite(id: chapter.id) ? Color.red : Color.cobaltBlue)
+                                .frame(width: 44, height: 44)
+                                .accessibilityLabel("Favorito")
+                        }
+                    )
+                )
                 
                 ZStack {
                     ScrollView {
@@ -87,12 +125,55 @@ struct ReaderView: View {
                             } else {
                                 LazyVStack(alignment: .leading, spacing: 0) {
                                     ForEach(verses) { verse in
+                                        let studyItem = getStudyData(for: verse.id)
+                                        let isHighlighted = studyItem?.highlightColor != nil
+                                        let hasNote = studyItem?.noteText != nil
+                                        
                                         VerseRow(
                                             verse: verse,
                                             fontSize: fontSize,
                                             lineSpacing: lineSpacing,
                                             theme: readingTheme
                                         )
+                                        .background(isHighlighted ? Color.yellow.opacity(0.3) : Color.clear)
+                                        .overlay(alignment: .topTrailing) {
+                                            if hasNote {
+                                                Image(systemName: "note.text")
+                                                    .foregroundColor(readingTheme.accentColor)
+                                                    .padding(.top, 8)
+                                            }
+                                        }
+                                        .contextMenu {
+                                            Button {
+                                                toggleHighlight(for: verse)
+                                            } label: {
+                                                Label(isHighlighted ? "Quitar Resaltado" : "Resaltar", systemImage: "highlighter")
+                                            }
+                                            
+                                            Button {
+                                                let isFav = favoritesService.isFavorite(id: verse.id)
+                                                if isFav {
+                                                    favoritesService.removeFavorite(id: verse.id)
+                                                } else {
+                                                    favoritesService.addFavorite(
+                                                        id: verse.id,
+                                                        reference: "\(chapter.reference):\(verse.number)",
+                                                        text: verse.text,
+                                                        bookName: bookName
+                                                    )
+                                                }
+                                            } label: {
+                                                let isFav = favoritesService.isFavorite(id: verse.id)
+                                                Label(isFav ? "Quitar de Favoritos" : "Marcar Favorito", systemImage: isFav ? "heart.fill" : "heart")
+                                            }
+                                            
+                                            Button {
+                                                selectedVerseForNote = verse.id
+                                                noteDraft = studyItem?.noteText ?? ""
+                                            } label: {
+                                                Label(hasNote ? "Editar Nota" : "Agregar Nota", systemImage: "pencil")
+                                            }
+                                        }
                                     }
                                 }
                                 .padding(24)
@@ -230,6 +311,31 @@ struct ReaderView: View {
             }
         }
         .toolbar(.hidden, for: .navigationBar)
+        .sheet(isPresented: Binding<Bool>(
+            get: { selectedVerseForNote != nil },
+            set: { if !$0 { selectedVerseForNote = nil } }
+        )) {
+            NavigationStack {
+                TextEditor(text: $noteDraft)
+                    .padding()
+                    .navigationTitle("Nota al Versículo")
+                    .toolbar {
+                        ToolbarItem(placement: .cancellationAction) {
+                            Button("Cancelar") {
+                                selectedVerseForNote = nil
+                            }
+                        }
+                        ToolbarItem(placement: .confirmationAction) {
+                            Button("Guardar") {
+                                if let verseId = selectedVerseForNote {
+                                    saveNote(for: verseId, text: noteDraft)
+                                }
+                                selectedVerseForNote = nil
+                            }
+                        }
+                    }
+            }
+        }
         .onAppear {
             loadChapter()
             
@@ -265,7 +371,7 @@ struct ReaderView: View {
                     }
                 } else {
                     await MainActor.run {
-                        self.verses = [VerseItem(number: "1", text: L10n.errorLoadingChapter.localized())]
+                        self.verses = [VerseItem(id: "\(chapter.id).error", number: "1", text: L10n.errorLoadingChapter.localized())]
                         self.isLoading = false
                     }
                 }
@@ -276,6 +382,69 @@ struct ReaderView: View {
     private func saveReadingProgress() {
         let progress = Double(verses.count) > 0 ? 0.5 : 0.0
         offlineService.updateReadingProgress(chapterId: chapter.id, verse: verses.count, percentage: progress)
+    }
+    
+    // MARK: - Study Tools Helpers
+    
+    private func getStudyData(for verseId: String) -> VerseStudyData? {
+        let currentBibleId = bibleService.getBibleForLanguage(localization.currentLanguage)
+        let uniqueId = "\(currentBibleId)-\(verseId)"
+        return studyData.first(where: { $0.id == uniqueId })
+    }
+    
+    private func toggleHighlight(for verse: VerseItem) {
+        let currentBibleId = bibleService.getBibleForLanguage(localization.currentLanguage)
+        let uniqueId = "\(currentBibleId)-\(verse.id)"
+        
+        if let existing = getStudyData(for: verse.id) {
+            existing.highlightColor = existing.highlightColor == nil ? "yellow" : nil
+            existing.updatedAt = Date()
+        } else {
+            let newData = VerseStudyData(
+                id: uniqueId,
+                bibleId: currentBibleId,
+                bookId: String(verse.id.split(separator: ".").first ?? ""),
+                chapterId: chapter.id,
+                verseId: verse.id,
+                highlightColor: "yellow"
+            )
+            modelContext.insert(newData)
+        }
+        
+        do {
+            try modelContext.save()
+        } catch {
+            print("Failed to save highlight: \(error)")
+        }
+    }
+    
+    private func saveNote(for verseId: String, text: String) {
+        let currentBibleId = bibleService.getBibleForLanguage(localization.currentLanguage)
+        let uniqueId = "\(currentBibleId)-\(verseId)"
+        
+        // Remove empty strings fully
+        let trimmed = text.trimmingCharacters(in: .whitespacesAndNewlines)
+        
+        if let existing = getStudyData(for: verseId) {
+            existing.noteText = trimmed.isEmpty ? nil : trimmed
+            existing.updatedAt = Date()
+        } else {
+            let newData = VerseStudyData(
+                id: uniqueId,
+                bibleId: currentBibleId,
+                bookId: String(verseId.split(separator: ".").first ?? ""),
+                chapterId: chapter.id,
+                verseId: verseId,
+                noteText: trimmed.isEmpty ? nil : trimmed
+            )
+            modelContext.insert(newData)
+        }
+        
+        do {
+            try modelContext.save()
+        } catch {
+            print("Failed to save note: \(error)")
+        }
     }
     
     private func parseVerses(from content: String) -> [VerseItem] {
@@ -306,7 +475,7 @@ struct ReaderView: View {
                         verseText = verseText.trimmingCharacters(in: .whitespacesAndNewlines)
                         
                         if !verseText.isEmpty {
-                            verses.append(VerseItem(number: verseNumber, text: verseText))
+                            verses.append(VerseItem(id: "\(chapter.id).\(verseNumber)", number: verseNumber, text: verseText))
                         }
                     }
                 }
@@ -316,11 +485,11 @@ struct ReaderView: View {
             let cleaned = content.replacingOccurrences(of: "<[^>]+>", with: " ", options: .regularExpression)
             let text = cleaned.replacingOccurrences(of: "\\s+", with: " ", options: .regularExpression).trimmingCharacters(in: .whitespacesAndNewlines)
             if !text.isEmpty {
-                verses.append(VerseItem(number: "1", text: text))
+                verses.append(VerseItem(id: "\(chapter.id).1", number: "1", text: text))
             }
         }
         
-        return verses.isEmpty ? [VerseItem(number: "1", text: content)] : verses
+        return verses.isEmpty ? [VerseItem(id: "\(chapter.id).1", number: "1", text: content)] : verses
     }
     
     private func cycleTheme() {
@@ -335,7 +504,7 @@ struct ReaderView: View {
 // MARK: - Verse Item Model
 
 struct VerseItem: Identifiable {
-    let id = UUID()
+    let id: String
     let number: String
     let text: String
 }

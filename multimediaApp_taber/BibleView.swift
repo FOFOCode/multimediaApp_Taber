@@ -379,9 +379,12 @@ struct SearchResultCard: View {
             
             Text(cleanHTMLTags(from: result.displayText))
                 .font(.body)
+                .lineLimit(3)
+                .truncationMode(.tail)
                 .foregroundStyle(Color.cobaltBlue) // Se cambió de Color.primary para que sea siempre visible en modo oscuro
         }
         .padding(16)
+        .frame(maxWidth: .infinity, alignment: .leading)
         .background(
             RoundedRectangle(cornerRadius: 12, style: .continuous)
                 .fill(Color.white)
@@ -418,13 +421,26 @@ struct FavoritesListView: View {
                 ScrollView {
                     LazyVStack(spacing: 12) {
                         ForEach(favoritesService.favorites) { favorite in
-                            FavoriteCard(favorite: favorite)
+                            NavigationLink(destination: ReaderView(
+                                bookName: favorite.bookName,
+                                chapter: createChapter(from: favorite)
+                            )) {
+                                FavoriteCard(favorite: favorite)
+                            }
+                            .buttonStyle(.plain)
                         }
                     }
                     .padding(.horizontal, 20)
                 }
             }
         }
+    }
+    
+    private func createChapter(from favorite: FavoriteVerse) -> Chapter {
+        let parts = favorite.id.split(separator: ".")
+        let chapterId = parts.count >= 2 ? "\(parts[0]).\(parts[1])" : favorite.id
+        let chapterNumber = parts.count >= 2 ? String(parts[1]) : "1"
+        return Chapter(id: String(chapterId), number: chapterNumber, reference: "\(favorite.bookName) \(chapterNumber)", content: nil)
     }
 }
 
@@ -459,9 +475,12 @@ struct FavoriteCard: View {
             
             Text(favorite.text)
                 .font(.body)
+                .lineLimit(4)
+                .truncationMode(.tail)
                 .foregroundStyle(Color.cobaltBlue) // Cambiado a Color.cobaltBlue en lugar de Color.primary para Dark Mode issue
         }
         .padding(16)
+        .frame(maxWidth: .infinity, alignment: .leading)
         .background(
             RoundedRectangle(cornerRadius: 12, style: .continuous)
                 .fill(Color.white)

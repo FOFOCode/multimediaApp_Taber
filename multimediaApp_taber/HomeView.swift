@@ -254,6 +254,14 @@ struct HomeView: View {
                     )
                 }
 
+                NavigationLink(destination: FavoritesView()) {
+                    QuickAccessCard(
+                        icon: "heart.fill",
+                        title: "Favoritos",
+                        subtitle: "Tus pasajes"
+                    )
+                }
+
                 NavigationLink(destination: NotificationsSettingsView()) {
                     QuickAccessCard(
                         icon: "bell.fill",

@@ -7,6 +7,7 @@
 
 import SwiftUI
 import AVFoundation
+import SwiftData
 
 @main
 struct multimediaApp_taberApp: App {
@@ -22,6 +23,7 @@ struct multimediaApp_taberApp: App {
                     setupNotifications()
                 }
         }
+        .modelContainer(for: VerseStudyData.self)
         .onChange(of: scenePhase) { oldPhase, newPhase in
             switch newPhase {
             case .background, .inactive:

@@ -22,6 +22,7 @@ final class HomeDashboardService: ObservableObject {
     private let cachedVerseDateKey = "home_dashboard_cached_verse_date"
     private let cachedVerseTextKey = "home_dashboard_cached_verse_text"
     private let cachedVerseRefKey = "home_dashboard_cached_verse_ref"
+    private let cachedVerseLanguageKey = "home_dashboard_cached_verse_lang"
 
     private var activeSessions: [String: Date] = [:]
     private var cancellables = Set<AnyCancellable>()
@@ -38,9 +39,12 @@ final class HomeDashboardService: ObservableObject {
     @MainActor
     func refreshVerseOfDayIfNeeded() async {
         let todayKey = dayKey(for: Date())
+        let languageCode = LocalizationManager.shared.currentLanguage
 
         if let cachedDate = defaults.string(forKey: cachedVerseDateKey),
            cachedDate == todayKey,
+           let cachedLanguage = defaults.string(forKey: cachedVerseLanguageKey),
+           cachedLanguage == languageCode,
            let cachedText = defaults.string(forKey: cachedVerseTextKey),
            let cachedRef = defaults.string(forKey: cachedVerseRefKey),
            !cachedText.isEmpty,
@@ -53,7 +57,6 @@ final class HomeDashboardService: ObservableObject {
         isLoadingVerse = true
 
         do {
-            let languageCode = LocalizationManager.shared.currentLanguage
             let bibleId = BibleService.shared.getBibleForLanguage(languageCode)
             let query = queryForToday(languageCode: languageCode)
             let results = try await BibleService.shared.searchVerses(bibleId: bibleId, query: query)
@@ -179,8 +182,17 @@ final class HomeDashboardService: ObservableObject {
 
         let spanishQueries = ["esperanza", "amor", "fe", "gracia", "paz", "fortaleza", "misericordia"]
         let englishQueries = ["hope", "love", "faith", "grace", "peace", "strength", "mercy"]
+        let portugueseQueries = ["esperança", "amor", "fé", "graça", "paz", "força", "misericórdia"]
+        let frenchQueries = ["espérance", "amour", "foi", "grâce", "paix", "force", "miséricorde"]
 
-        let source = languageCode == "es" ? spanishQueries : englishQueries
+        let source: [String]
+        switch languageCode {
+        case "en": source = englishQueries
+        case "pt": source = portugueseQueries
+        case "fr": source = frenchQueries
+        default: source = spanishQueries
+        }
+        
         return source[day % source.count]
     }
 
@@ -206,6 +218,7 @@ final class HomeDashboardService: ObservableObject {
         defaults.set(dateKey, forKey: cachedVerseDateKey)
         defaults.set(safeText, forKey: cachedVerseTextKey)
         defaults.set(safeRef, forKey: cachedVerseRefKey)
+        defaults.set(LocalizationManager.shared.currentLanguage, forKey: cachedVerseLanguageKey)
     }
 
     private func applyOfflineFallback(dateKey: String) {

@@ -62,6 +62,8 @@ class BibleService: ObservableObject {
     /// IDs de Biblias recomendadas por idioma
     private let spanishBibleId = "592420522e16049f-01"    // Reina Valera 1909
     private let englishBibleId = "de4e12af7f28f599-02"    // King James Version
+    private let portugueseBibleId = "90799bb5b996fddc-01" // Translation in Brasilian Portuguese
+    private let frenchBibleId = "a93a92589195411f-01"    // Bible J.N. Darby
     
     /// Red de alto rendimiento (Custom URL Session config)
     private let urlSession: URLSession
@@ -296,7 +298,18 @@ class BibleService: ObservableObject {
     ///   - languageCode: Código de idioma ("es" para español, otro para inglés)
     /// - Returns: ID de Biblia recomendada para el idioma
     func getBibleForLanguage(_ languageCode: String) -> String {
-        return languageCode == "es" ? spanishBibleId : englishBibleId
+        switch languageCode {
+        case "en":
+            return englishBibleId
+        case "pt":
+            return portugueseBibleId
+        case "fr":
+            return frenchBibleId
+        case "es":
+            fallthrough
+        default:
+            return spanishBibleId
+        }
     }
     
     /// Carga datos de la Biblia (libros) de forma asíncrona
