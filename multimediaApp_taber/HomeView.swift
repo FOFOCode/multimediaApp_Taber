@@ -1,268 +1,328 @@
 import SwiftUI
 
 struct HomeView: View {
+    @StateObject private var dashboard = HomeDashboardService.shared
     @StateObject private var localization = LocalizationManager.shared
     @State private var appearAnimation = false
-    @State private var cardAppear = [false, false, false, false]
-    @State private var showLanguageSelector = false
-    
+
     var body: some View {
         NavigationStack {
             ZStack {
                 AppBackground(style: .home)
-                
+
                 ScrollView(showsIndicators: false) {
-                    VStack(spacing: 32) {
-                        // Botón de idioma en la esquina superior derecha
-                        HStack {
-                            Spacer()
-                            Button {
-                                showLanguageSelector = true
-                            } label: {
-                                HStack(spacing: 6) {
-                                    Image(systemName: "globe")
-                                        .font(.system(size: 16, weight: .semibold))
-                                    Text(localization.currentLanguage.uppercased())
-                                        .font(.caption.weight(.bold))
-                                }
-                                .foregroundStyle(Color.aliceBlue)
-                                .padding(.horizontal, 12)
-                                .padding(.vertical, 8)
-                                .background(
-                                    Capsule()
-                                        .fill(Color.cobaltBlue.opacity(0.3))
-                                        .overlay(
-                                            Capsule()
-                                                .stroke(Color.aliceBlue.opacity(0.3), lineWidth: 1)
-                                        )
-                                )
-                                .shadow(color: Color.cobaltBlue.opacity(0.2), radius: 8, x: 0, y: 4)
-                            }
-                        }
-                        .padding(.horizontal, 24)
-                        .padding(.top, 10)
-                        
-                        // Header con saludo dinámico
-                        VStack(spacing: 12) {
-                            // Icono decorativo
-                            ZStack {
-                                Circle()
-                                    .fill(.ultraThinMaterial)
-                                    .frame(width: 80, height: 80)
-                                
-                                Image(systemName: "waveform.circle.fill")
-                                    .font(.system(size: 44))
-                                    .foregroundStyle(
-                                        LinearGradient(
-                                            colors: [Color.aliceBlue, Color.icyBlue],
-                                            startPoint: .topLeading,
-                                            endPoint: .bottomTrailing
-                                        )
-                                    )
-                                    .symbolEffect(.pulse, options: .repeating)
-                            }
-                            .shadow(color: Color.cobaltBlue.opacity(0.3), radius: 15, x: 0, y: 8)
-                            .padding(.bottom, 4)
-                            
-                            VStack(spacing: 6) {
-                                Text(greetingText)
-                                    .font(.title3.weight(.medium))
-                                    .foregroundStyle(Color.aliceBlue.opacity(0.9))
-                                
-                                Text(L10n.appName.localized())
-                                    .font(.system(size: 38, weight: .bold, design: .rounded))
-                                    .foregroundStyle(Color.aliceBlue)
-                            }
-                            
-                            Text(L10n.selectContent.localized())
-                                .font(.subheadline.weight(.medium))
-                                .foregroundStyle(Color.aliceBlue.opacity(0.75))
-                                .padding(.top, 4)
-                        }
-                        .multilineTextAlignment(.center)
-                        .shadow(color: Color.cobaltBlue.opacity(0.25), radius: 10, x: 0, y: 6)
-                        .padding(.top, 30)
-                        .opacity(appearAnimation ? 1 : 0)
-                        .offset(y: appearAnimation ? 0 : 20)
-                        
-                        // Cards de contenido
-                        VStack(spacing: 20) {
-                            NavigationLink(destination: RadioView()) {
-                                EnhancedActionCard(
-                                    icon: "dot.radiowaves.left.and.right",
-                                    title: L10n.radioTitle.localized(),
-                                    subtitle: L10n.radioSubtitle.localized(),
-                                    description: L10n.radioDescription.localized(),
-                                    gradient: [Color.dodgerBlue, Color.brilliantAzure, Color.twitterBlue],
-                                    accentIcon: "antenna.radiowaves.left.and.right"
-                                )
-                            }
-                            .opacity(cardAppear[0] ? 1 : 0)
-                            .offset(y: cardAppear[0] ? 0 : 30)
-                            
-                            NavigationLink(destination: TVView()) {
-                                EnhancedActionCard(
-                                    icon: "tv.fill",
-                                    title: L10n.tvTitle.localized(),
-                                    subtitle: L10n.tvSubtitle.localized(),
-                                    description: L10n.tvDescription.localized(),
-                                    gradient: [Color.twitterBlue, Color.oceanDeep, Color.cobaltBlue],
-                                    accentIcon: "play.tv.fill"
-                                )
-                            }
-                            .opacity(cardAppear[1] ? 1 : 0)
-                            .offset(y: cardAppear[1] ? 0 : 30)
-                            
-                            NavigationLink(destination: InfoView()) {
-                                EnhancedActionCard(
-                                    icon: "info.circle.fill",
-                                    title: L10n.infoTitle.localized(),
-                                    subtitle: L10n.infoSubtitle.localized(),
-                                    description: L10n.infoDescription.localized(),
-                                    gradient: [Color.brilliantAzure, Color.coolSky2, Color.skyBlue],
-                                    accentIcon: "calendar.badge.clock"
-                                )
-                            }
-                            .opacity(cardAppear[2] ? 1 : 0)
-                            .offset(y: cardAppear[2] ? 0 : 30)
-                            
-                            NavigationLink(destination: BibleView()) {
-                                EnhancedActionCard(
-                                    icon: "book.fill",
-                                    title: L10n.bibleTitle.localized(),
-                                    subtitle: L10n.bibleSubtitle.localized(),
-                                    description: L10n.bibleDescription.localized(),
-                                    gradient: [Color.cobaltBlue, Color.dodgerBlue, Color.twitterBlue],
-                                    accentIcon: "book.closed.fill"
-                                )
-                            }
-                            .opacity(cardAppear[3] ? 1 : 0)
-                            .offset(y: cardAppear[3] ? 0 : 30)
-                        }
-                        .padding(.top, 10)
-                        
-                        Spacer(minLength: 40)
+                    VStack(alignment: .leading, spacing: 22) {
+                        headerSection
+                        verseOfTheDaySection
+                        quickAccessSection
+                        journeySection
+
+                        Spacer(minLength: 24)
                     }
-                    .padding(.horizontal, 24)
+                    .padding(.horizontal, 20)
+                    .padding(.top, 24)
+                    .padding(.bottom, 32)
                 }
             }
             .toolbar(.hidden, for: .navigationBar)
         }
-        .sheet(isPresented: $showLanguageSelector) {
-            LanguageSelectorView()
-        }
         .onAppear {
-            NotificationCenter.default.post(name: .stopAllMedia, object: nil)
-            
-            withAnimation(.spring(response: 0.6, dampingFraction: 0.8)) {
+            dashboard.handleHomeAppear()
+
+            withAnimation(.spring(response: 0.7, dampingFraction: 0.82)) {
                 appearAnimation = true
             }
-            
-            for index in 0..<4 {
-                withAnimation(.spring(response: 0.6, dampingFraction: 0.75).delay(0.2 + Double(index) * 0.15)) {
-                    cardAppear[index] = true
-                }
+        }
+        .task {
+            await dashboard.refreshVerseOfDayIfNeeded()
+        }
+        .onChange(of: localization.currentLanguage) { _, _ in
+            Task {
+                await dashboard.refreshVerseOfDayIfNeeded()
             }
         }
     }
-    
-    private var greetingText: String {
-        let hour = Calendar.current.component(.hour, from: Date())
-        switch hour {
-        case 6..<12: return L10n.goodMorning.localized()
-        case 12..<19: return L10n.goodAfternoon.localized()
-        default: return L10n.goodEvening.localized()
-        }
-    }
-}
 
-// Card mejorada con más detalles visuales
-struct EnhancedActionCard: View {
-    let icon: String
-    let title: String
-    let subtitle: String
-    let description: String
-    let gradient: [Color]
-    let accentIcon: String
-    
-    var body: some View {
-        HStack(spacing: 0) {
-            // Lado izquierdo con icono grande
-            VStack {
+    private var headerSection: some View {
+        VStack(alignment: .leading, spacing: 14) {
+            HStack(alignment: .top) {
+                VStack(alignment: .leading, spacing: 6) {
+                    Text(greetingText)
+                        .font(.subheadline.weight(.medium))
+                        .foregroundStyle(Color.aliceBlue.opacity(0.95))
+
+                    Text(L10n.appName.localized())
+                        .font(.system(size: 34, weight: .bold, design: .serif))
+                        .foregroundStyle(Color.aliceBlue)
+                }
+
+                Spacer()
+
                 ZStack {
                     Circle()
-                        .fill(Color.aliceBlue.opacity(0.2))
-                        .frame(width: 70, height: 70)
-                    
-                    Circle()
-                        .fill(Color.aliceBlue.opacity(0.15))
-                        .frame(width: 56, height: 56)
-                    
-                    Image(systemName: icon)
-                        .font(.system(size: 28, weight: .semibold))
+                        .fill(Color.aliceBlue.opacity(0.18))
+                        .frame(width: 52, height: 52)
+
+                    Image(systemName: "book.closed.fill")
+                        .font(.system(size: 22, weight: .semibold))
                         .foregroundStyle(Color.aliceBlue)
                 }
             }
-            .frame(width: 100)
-            .padding(.vertical, 24)
-            
-            // Contenido central
-            VStack(alignment: .leading, spacing: 6) {
-                Text(title)
-                    .font(.title2.weight(.bold))
-                    .foregroundStyle(Color.aliceBlue)
-                
-                Text(subtitle)
-                    .font(.subheadline.weight(.semibold))
-                    .foregroundStyle(Color.aliceBlue.opacity(0.85))
-                
-                Text(description)
-                    .font(.caption)
-                    .foregroundStyle(Color.aliceBlue.opacity(0.7))
-                    .padding(.top, 2)
+
+            Text("Palabra, radio y TV en un solo lugar")
+                .font(.subheadline.weight(.medium))
+                .foregroundStyle(Color.aliceBlue.opacity(0.86))
+
+            HStack(spacing: 8) {
+                Image(systemName: "sparkles")
+                    .font(.caption.weight(.semibold))
+
+                Text("Inspiración diaria")
+                    .font(.caption.weight(.semibold))
+
+                Spacer()
+
+                Text(todayString)
+                    .font(.caption.weight(.medium))
+            }
+            .foregroundStyle(Color.aliceBlue.opacity(0.9))
+            .padding(.horizontal, 12)
+            .padding(.vertical, 10)
+            .background(
+                RoundedRectangle(cornerRadius: 14, style: .continuous)
+                    .fill(Color.aliceBlue.opacity(0.12))
+            )
+        }
+        .opacity(appearAnimation ? 1 : 0)
+        .offset(y: appearAnimation ? 0 : 14)
+    }
+
+    private var verseOfTheDaySection: some View {
+        VStack(alignment: .leading, spacing: 10) {
+            sectionTitle("Versiculo del dia")
+
+            VStack(alignment: .leading, spacing: 12) {
+                if dashboard.isLoadingVerse && dashboard.verseText.isEmpty {
+                    ProgressView()
+                        .tint(Color.aliceBlue)
+                } else {
+                    Text("\"\(dashboard.verseText)\"")
+                        .font(.system(size: 21, weight: .medium, design: .serif))
+                        .foregroundStyle(Color.aliceBlue)
+                        .fixedSize(horizontal: false, vertical: true)
+
+                    Text(dashboard.verseRef)
+                        .font(.footnote.weight(.semibold))
+                        .foregroundStyle(Color.aliceBlue.opacity(0.85))
+                }
             }
             .frame(maxWidth: .infinity, alignment: .leading)
-            .padding(.vertical, 24)
-            
-            // Flecha con fondo
-            VStack {
-                ZStack {
-                    Circle()
-                        .fill(Color.aliceBlue.opacity(0.2))
-                        .frame(width: 40, height: 40)
-                    
-                    Image(systemName: "chevron.right")
-                        .font(.system(size: 16, weight: .bold))
-                        .foregroundStyle(Color.aliceBlue)
-                }
-            }
-            .padding(.trailing, 16)
-        }
-        .frame(maxWidth: .infinity)
-        .frame(minHeight: 140)
-        .background(
-            ZStack {
-                // Gradiente principal
+            .padding(18)
+            .background(
                 LinearGradient(
-                    gradient: Gradient(colors: gradient),
+                    colors: [Color.oceanDeep.opacity(0.95), Color.cobaltBlue.opacity(0.95)],
                     startPoint: .topLeading,
                     endPoint: .bottomTrailing
                 )
-                
-                // Icono decorativo de fondo
-                Image(systemName: accentIcon)
-                    .font(.system(size: 120, weight: .ultraLight))
-                    .foregroundStyle(Color.aliceBlue.opacity(0.08))
-                    .offset(x: 80, y: 20)
+            )
+            .clipShape(RoundedRectangle(cornerRadius: 20, style: .continuous))
+            .overlay(
+                RoundedRectangle(cornerRadius: 20, style: .continuous)
+                    .stroke(Color.aliceBlue.opacity(0.18), lineWidth: 1)
+            )
+            .shadow(color: Color.cobaltBlue.opacity(0.25), radius: 14, x: 0, y: 10)
+        }
+        .opacity(appearAnimation ? 1 : 0)
+        .offset(y: appearAnimation ? 0 : 16)
+    }
+
+    private var quickAccessSection: some View {
+        VStack(alignment: .leading, spacing: 12) {
+            sectionTitle("Accesos rapidos")
+
+            LazyVGrid(columns: [GridItem(.flexible()), GridItem(.flexible())], spacing: 12) {
+                NavigationLink(destination: BibleView()) {
+                    QuickAccessCard(
+                        icon: "book.fill",
+                        title: L10n.bibleTitle.localized(),
+                        subtitle: L10n.books.localized()
+                    )
+                }
+
+                NavigationLink(destination: RadioView()) {
+                    QuickAccessCard(
+                        icon: "dot.radiowaves.left.and.right",
+                        title: L10n.radio.localized(),
+                        subtitle: L10n.live.localized()
+                    )
+                }
+
+                NavigationLink(destination: TVView()) {
+                    QuickAccessCard(
+                        icon: "tv.fill",
+                        title: L10n.tv.localized(),
+                        subtitle: L10n.streaming.localized()
+                    )
+                }
+
+                NavigationLink(destination: InfoView()) {
+                    QuickAccessCard(
+                        icon: "calendar.badge.clock",
+                        title: L10n.infoTitle.localized(),
+                        subtitle: L10n.infoSubtitle.localized()
+                    )
+                }
             }
+        }
+        .opacity(appearAnimation ? 1 : 0)
+        .offset(y: appearAnimation ? 0 : 18)
+    }
+
+    private var journeySection: some View {
+        VStack(alignment: .leading, spacing: 12) {
+            sectionTitle("Tu jornada espiritual")
+
+            JourneyProgressCard(
+                title: "Plan Semanal",
+                subtitle: "Check-in diario en la aplicacion",
+                progress: dashboard.weeklyPlanProgress,
+                badgeText: dashboard.weeklyPlanBadgeText
+            )
+
+            JourneyProgressCard(
+                title: "Tiempo en Palabra",
+                subtitle: "Minutos acumulados en Radio y TV hoy",
+                progress: dashboard.minutesProgress,
+                badgeText: dashboard.minutesBadgeText
+            )
+        }
+        .opacity(appearAnimation ? 1 : 0)
+        .offset(y: appearAnimation ? 0 : 20)
+    }
+
+    private func sectionTitle(_ text: String) -> some View {
+        Text(text)
+            .font(.headline.weight(.semibold))
+            .foregroundStyle(Color.aliceBlue)
+    }
+
+    private var greetingText: String {
+        let hour = Calendar.current.component(.hour, from: Date())
+        switch hour {
+        case 6..<12:
+            return L10n.goodMorning.localized()
+        case 12..<19:
+            return L10n.goodAfternoon.localized()
+        default:
+            return L10n.goodEvening.localized()
+        }
+    }
+
+    private var todayString: String {
+        let formatter = DateFormatter()
+        formatter.locale = Locale(identifier: localization.currentLanguage == "es" ? "es_ES" : "en_US")
+        formatter.dateFormat = "d MMM"
+        return formatter.string(from: Date()).capitalized
+    }
+}
+
+struct QuickAccessCard: View {
+    let icon: String
+    let title: String
+    let subtitle: String
+
+    var body: some View {
+        VStack(alignment: .leading, spacing: 10) {
+            ZStack {
+                RoundedRectangle(cornerRadius: 10, style: .continuous)
+                    .fill(Color.aliceBlue.opacity(0.16))
+                    .frame(width: 34, height: 34)
+
+                Image(systemName: icon)
+                    .font(.system(size: 15, weight: .semibold))
+                    .foregroundStyle(Color.aliceBlue)
+            }
+
+            Text(title)
+                .font(.headline.weight(.semibold))
+                .foregroundStyle(Color.aliceBlue)
+                .lineLimit(1)
+
+            Text(subtitle)
+                .font(.caption)
+                .foregroundStyle(Color.aliceBlue.opacity(0.82))
+                .lineLimit(1)
+        }
+        .frame(maxWidth: .infinity, minHeight: 112, alignment: .leading)
+        .padding(14)
+        .background(
+            LinearGradient(
+                colors: [Color.twitterBlue.opacity(0.95), Color.oceanDeep.opacity(0.95)],
+                startPoint: .topLeading,
+                endPoint: .bottomTrailing
+            )
         )
-        .clipShape(RoundedRectangle(cornerRadius: 24, style: .continuous))
+        .clipShape(RoundedRectangle(cornerRadius: 18, style: .continuous))
         .overlay(
-            RoundedRectangle(cornerRadius: 24, style: .continuous)
-                .stroke(Color.aliceBlue.opacity(0.2), lineWidth: 1)
+            RoundedRectangle(cornerRadius: 18, style: .continuous)
+                .stroke(Color.aliceBlue.opacity(0.18), lineWidth: 1)
         )
-        .shadow(color: Color.cobaltBlue.opacity(0.25), radius: 15, x: 0, y: 10)
-        .contentShape(RoundedRectangle(cornerRadius: 24, style: .continuous))
+    }
+}
+
+struct JourneyProgressCard: View {
+    let title: String
+    let subtitle: String
+    let progress: Double
+    let badgeText: String
+
+    var body: some View {
+        VStack(alignment: .leading, spacing: 10) {
+            HStack {
+                VStack(alignment: .leading, spacing: 4) {
+                    Text(title)
+                        .font(.subheadline.weight(.semibold))
+                        .foregroundStyle(Color.cobaltBlue)
+
+                    Text(subtitle)
+                        .font(.caption)
+                        .foregroundStyle(Color.cobaltBlue.opacity(0.78))
+                }
+
+                Spacer()
+
+                Text(badgeText)
+                    .font(.caption2.weight(.semibold))
+                    .foregroundStyle(Color.aliceBlue)
+                    .padding(.horizontal, 10)
+                    .padding(.vertical, 6)
+                    .background(
+                        Capsule()
+                            .fill(Color.cobaltBlue)
+                    )
+            }
+
+            GeometryReader { geo in
+                let width = geo.size.width
+                ZStack(alignment: .leading) {
+                    Capsule()
+                        .fill(Color.twitterBlue.opacity(0.20))
+                    Capsule()
+                        .fill(Color.cobaltBlue)
+                        .frame(width: width * max(0, min(progress, 1)))
+                }
+            }
+            .frame(height: 8)
+        }
+        .padding(14)
+        .background(
+            RoundedRectangle(cornerRadius: 16, style: .continuous)
+                .fill(Color.aliceBlue.opacity(0.93))
+        )
+        .overlay(
+            RoundedRectangle(cornerRadius: 16, style: .continuous)
+                .stroke(Color.cobaltBlue.opacity(0.10), lineWidth: 1)
+        )
     }
 }
 

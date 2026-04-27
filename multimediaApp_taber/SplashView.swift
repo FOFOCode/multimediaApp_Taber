@@ -50,11 +50,11 @@ struct SplashView: View {
                             .frame(width: 180, height: 180)
                             .shadow(color: .cobaltBlue.opacity(0.2), radius: 30, x: 0, y: 15)
                         
-                        Image("AppIcon")
+                        Image("Splash")
                             .resizable()
                             .scaledToFit()
-                            .frame(width: 140)
-                            .clipShape(RoundedRectangle(cornerRadius: 30, style: .continuous))
+                            .frame(width: 160, height: 160)
+                            .clipShape(Circle())
                             .shadow(color: .cobaltBlue.opacity(0.35), radius: 20, x: 0, y: 12)
                     }
                     .scaleEffect(logoScale)

@@ -1,13 +1,18 @@
 import SwiftUI
 import AVFoundation
+import Combine
 
 struct RadioView: View {
     @StateObject private var localization = LocalizationManager.shared
-    private let radioURL = URL(string: "https://uk23freenew.listen2myradio.com/live.mp3?typeportmount=s1_22775_stream_247632100")!
+    private let radioURL = URL(string: "https://uk5freenew.listen2myradio.com/live.mp3?typeportmount=s1_39762_stream_848017234")!
     @State private var player: AVPlayer? = nil
     @State private var isPlaying = false
+    @State private var isLoading = false
+    @State private var errorMessage: String? = nil
     @State private var appearAnimation = false
     @State private var waveAnimation = false
+    @State private var playerStatus: AVPlayer.Status = .unknown
+    @State private var cancellables = Set<AnyCancellable>()
     
     var body: some View {
         ZStack {
@@ -22,29 +27,7 @@ struct RadioView: View {
                         ZStack {
                             // Anillos pulsantes cuando está reproduciendo
                             ForEach(0..<4, id: \.self) { index in
-                                Circle()
-                                    .stroke(
-                                        LinearGradient(
-                                            colors: [Color.dodgerBlue.opacity(0.4), Color.brilliantAzure.opacity(0.1)],
-                                            startPoint: .top,
-                                            endPoint: .bottom
-                                        ),
-                                        lineWidth: isPlaying ? 3 : 1
-                                    )
-                                    .frame(
-                                        width: 160 + CGFloat(index * 35),
-                                        height: 160 + CGFloat(index * 35)
-                                    )
-                                    .scaleEffect(isPlaying && waveAnimation ? 1.15 : 1.0)
-                                    .opacity(isPlaying ? (1.0 - Double(index) * 0.2) : 0.3)
-                                    .animation(
-                                        isPlaying ?
-                                            .easeInOut(duration: 1.2)
-                                            .repeatForever(autoreverses: true)
-                                            .delay(Double(index) * 0.15) :
-                                            .easeOut(duration: 0.3),
-                                        value: waveAnimation
-                                    )
+                                PulsingRing(index: index, isPlaying: isPlaying, waveAnimation: waveAnimation)
                             }
                             
                             // Círculo de fondo glassmorphism
@@ -179,14 +162,45 @@ struct RadioView: View {
                         .padding(.top, 16)
                         .opacity(appearAnimation ? 1 : 0)
                         
-                        // Texto informativo
-                        VStack(spacing: 8) {
-                            Text(isPlaying ? L10n.tapToStop.localized() : L10n.tapToPlay.localized())
-                                .font(.subheadline)
-                                .foregroundStyle(Color.twitterBlue.opacity(0.7))
+                        // Indicador de carga
+                        if isLoading && !isPlaying {
+                            HStack(spacing: 8) {
+                                ProgressView()
+                                    .progressViewStyle(CircularProgressViewStyle(tint: Color.twitterBlue))
+                                Text(L10n.connecting.localized())
+                                    .font(.subheadline)
+                                    .foregroundStyle(Color.twitterBlue.opacity(0.7))
+                            }
+                            .padding(.top, 8)
                         }
-                        .padding(.top, 8)
-                        .opacity(appearAnimation ? 1 : 0)
+                        
+                        // Mensaje de error con botón de reintento
+                        if let error = errorMessage {
+                            VStack(spacing: 12) {
+                                HStack(spacing: 6) {
+                                    Image(systemName: "exclamationmark.triangle.fill")
+                                        .foregroundStyle(Color.orange)
+                                    Text(error)
+                                        .font(.subheadline)
+                                        .foregroundStyle(Color.orange)
+                                }
+                                
+                                Button {
+                                    retryPlayback()
+                                } label: {
+                                    Text(L10n.retry.localized())
+                                        .font(.subheadline.weight(.semibold))
+                                        .foregroundStyle(Color.white)
+                                        .padding(.horizontal, 20)
+                                        .padding(.vertical, 8)
+                                        .background(
+                                            Capsule()
+                                                .fill(Color.dodgerBlue)
+                                        )
+                                }
+                            }
+                            .padding(.top, 8)
+                        }
                         
                         Spacer(minLength: 60)
                     }
@@ -196,6 +210,7 @@ struct RadioView: View {
         }
         .toolbar(.hidden, for: .navigationBar)
         .onAppear {
+            cancellables.removeAll()
             withAnimation(.spring(response: 0.7, dampingFraction: 0.8)) {
                 appearAnimation = true
             }
@@ -209,23 +224,66 @@ struct RadioView: View {
     }
 
     private func startPlayback() {
+        errorMessage = nil
         configureAudioSessionIfPossible()
-        // Siempre crear un nuevo player para streams en vivo
-        // para evitar problemas con conexiones expiradas
         player?.pause()
         player = nil
         
         let playerItem = AVPlayerItem(url: radioURL)
         player = AVPlayer(playerItem: playerItem)
         player?.automaticallyWaitsToMinimizeStalling = true
+        
+        playerItem.publisher(for: \.status)
+            .receive(on: DispatchQueue.main)
+            .sink { [self] status in
+                handleStatusChange(status)
+            }
+            .store(in: &cancellables)
+        
+        playerItem.publisher(for: \.isPlaybackBufferEmpty)
+            .receive(on: DispatchQueue.main)
+            .sink { [self] isEmpty in
+                if isEmpty && !isPlaying {
+                    isLoading = true
+                }
+            }
+            .store(in: &cancellables)
+        
+        isLoading = true
         player?.play()
+        HomeDashboardService.shared.beginMediaSession(source: "radio")
         isPlaying = true
         waveAnimation = true
+    }
+    
+    private func handleStatusChange(_ status: AVPlayerItem.Status) {
+        switch status {
+        case .readyToPlay:
+            isLoading = false
+            errorMessage = nil
+        case .failed:
+            isLoading = false
+            isPlaying = false
+            waveAnimation = false
+            errorMessage = player?.currentItem?.error?.localizedDescription ?? L10n.connectionError.localized()
+        case .unknown:
+            break
+        @unknown default:
+            break
+        }
+    }
+    
+    private func retryPlayback() {
+        player?.pause()
+        player = nil
+        cancellables.removeAll()
+        startPlayback()
     }
 
     private func stopPlayback() {
         player?.pause()
         player = nil
+        HomeDashboardService.shared.endMediaSession(source: "radio")
         isPlaying = false
         waveAnimation = false
     }
@@ -244,5 +302,37 @@ struct RadioView: View {
 struct RadioView_Previews: PreviewProvider {
     static var previews: some View {
         RadioView()
+    }
+}
+
+struct PulsingRing: View {
+    let index: Int
+    let isPlaying: Bool
+    let waveAnimation: Bool
+    
+    var body: some View {
+        Circle()
+            .stroke(
+                LinearGradient(
+                    colors: [Color.dodgerBlue.opacity(0.4), Color.brilliantAzure.opacity(0.1)],
+                    startPoint: .top,
+                    endPoint: .bottom
+                ),
+                lineWidth: isPlaying ? 3 : 1
+            )
+            .frame(
+                width: 160 + CGFloat(index * 35),
+                height: 160 + CGFloat(index * 35)
+            )
+            .scaleEffect(isPlaying && waveAnimation ? 1.15 : 1.0)
+            .opacity(isPlaying ? (1.0 - Double(index) * 0.2) : 0.3)
+            .animation(
+                isPlaying ?
+                    .easeInOut(duration: 1.2)
+                    .repeatForever(autoreverses: true)
+                    .delay(Double(index) * 0.15) :
+                    .easeOut(duration: 0.3),
+                value: waveAnimation
+            )
     }
 }

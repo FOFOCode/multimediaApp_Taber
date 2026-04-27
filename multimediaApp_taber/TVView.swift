@@ -1,18 +1,18 @@
 import SwiftUI
 import AVKit
+import AVFoundation
+import Combine
 
 struct TVView: View {
     @StateObject private var localization = LocalizationManager.shared
-    private let videoURL: URL
-    @State private var player: AVPlayer
+    private let videoURL = URL(string: "https://live20.bozztv.com/akamaissh101/ssh101/tabertv2024/chunks.m3u8")!
+    @State private var player: AVPlayer?
+    @State private var playerItem: AVPlayerItem?
     @State private var appearAnimation = false
     @State private var shouldPlay = true
-
-    init() {
-        let url = URL(string: "https://live20.bozztv.com/akamaissh101/ssh101/tabertv2024/chunks.m3u8")!
-        self.videoURL = url
-        _player = State(initialValue: AVPlayer(url: url))
-    }
+    @State private var isBuffering = true
+    @State private var showError = false
+    @State private var cancellables = Set<AnyCancellable>()
 
     var body: some View {
         ZStack {
@@ -83,14 +83,52 @@ struct TVView: View {
                                 // Fondo del reproductor
                                 RoundedRectangle(cornerRadius: 20, style: .continuous)
                                     .fill(Color.black)
-                                
-                                AppAVPlayerViewController(
-                                    player: player,
-                                    showsPlaybackControls: true,
-                                    allowsPictureInPicture: true,
-                                    updatesNowPlayingInfoCenter: true
-                                )
-                                .aspectRatio(16 / 9, contentMode: .fit)
+
+                                // Indicador de buffering
+                                if isBuffering {
+                                    VStack(spacing: 16) {
+                                        ProgressView()
+                                            .progressViewStyle(CircularProgressViewStyle(tint: .white))
+                                            .scaleEffect(1.5)
+                                        Text("Cargando...")
+                                            .font(.subheadline)
+                                            .foregroundStyle(.white.opacity(0.7))
+                                    }
+                                }
+
+                                // Reproductor
+                                if let player = player, !showError {
+                                    AppAVPlayerViewController(
+                                        player: player,
+                                        showsPlaybackControls: true,
+                                        allowsPictureInPicture: true,
+                                        updatesNowPlayingInfoCenter: true
+                                    )
+                                    .aspectRatio(16 / 9, contentMode: .fit)
+                                    .onAppear {
+                                        isBuffering = false
+                                    }
+                                }
+
+                                // Indicador de error
+                                if showError {
+                                    VStack(spacing: 12) {
+                                        Image(systemName: "exclamationmark.triangle.fill")
+                                            .font(.system(size: 40))
+                                            .foregroundStyle(.orange)
+                                        Text("No se pudo cargar el video")
+                                            .font(.subheadline)
+                                            .foregroundStyle(.white.opacity(0.8))
+                                        Button("Reintentar") {
+                                            setupPlayer()
+                                        }
+                                        .font(.subheadline.weight(.semibold))
+                                        .foregroundStyle(.white)
+                                        .padding(.horizontal, 20)
+                                        .padding(.vertical, 8)
+                                        .background(Capsule().fill(Color.dodgerBlue))
+                                    }
+                                }
                             }
                             .clipShape(RoundedRectangle(cornerRadius: 20, style: .continuous))
                             .overlay(
@@ -134,25 +172,7 @@ struct TVView: View {
         }
         .toolbar(.hidden, for: .navigationBar)
         .onAppear {
-            if player.currentItem == nil {
-                player.replaceCurrentItem(with: AVPlayerItem(url: videoURL))
-            }
-            
-            shouldPlay = true
-            // Reproducir automáticamente
-            player.play()
-            
-            // Observar cambios de tasa para mantener la reproducción
-            NotificationCenter.default.addObserver(
-                forName: .AVPlayerItemDidPlayToEndTime,
-                object: player.currentItem,
-                queue: .main
-            ) { _ in
-                if shouldPlay {
-                    player.seek(to: .zero)
-                    player.play()
-                }
-            }
+            setupPlayer()
             
             withAnimation(.spring(response: 0.7, dampingFraction: 0.8)) {
                 appearAnimation = true
@@ -164,12 +184,80 @@ struct TVView: View {
         .onDisappear {
             shouldPlay = false
             stopPlayback()
-            NotificationCenter.default.removeObserver(self, name: .AVPlayerItemDidPlayToEndTime, object: nil)
+            cancellables.removeAll()
         }
     }
 
+    private func setupPlayer() {
+        isBuffering = true
+        showError = false
+        player?.pause()
+        cancellables.removeAll()
+        
+        configureAudioSession()
+        
+        let item = AVPlayerItem(url: videoURL)
+        item.preferredForwardBufferDuration = 2
+        
+        playerItem = item
+        player = AVPlayer(playerItem: item)
+        player?.automaticallyWaitsToMinimizeStalling = false
+        
+        item.publisher(for: \.status)
+            .receive(on: DispatchQueue.main)
+            .sink { [self] status in
+                switch status {
+                case .readyToPlay:
+                    isBuffering = false
+                    player?.play()
+                    HomeDashboardService.shared.beginMediaSession(source: "tv")
+                case .failed:
+                    isBuffering = false
+                    showError = true
+                case .unknown:
+                    break
+                @unknown default:
+                    break
+                }
+            }
+            .store(in: &cancellables)
+        
+        item.publisher(for: \.isPlaybackBufferEmpty)
+            .receive(on: DispatchQueue.main)
+            .sink { [self] isEmpty in
+                if isEmpty {
+                    isBuffering = true
+                }
+            }
+            .store(in: &cancellables)
+        
+        item.publisher(for: \.isPlaybackLikelyToKeepUp)
+            .receive(on: DispatchQueue.main)
+            .sink { [self] likelyToKeepUp in
+                if likelyToKeepUp {
+                    isBuffering = false
+                }
+            }
+            .store(in: &cancellables)
+        
+        shouldPlay = true
+        player?.seek(to: .zero)
+        player?.play()
+    }
+    
+    private func configureAudioSession() {
+        do {
+            let session = AVAudioSession.sharedInstance()
+            try session.setCategory(.playback, mode: .moviePlayback, options: [.allowAirPlay, .allowBluetooth])
+            try session.setActive(true)
+        } catch {
+            print("Error configurando audio session: \(error)")
+        }
+    }
+    
     private func stopPlayback() {
-        player.pause()
+        player?.pause()
+        HomeDashboardService.shared.endMediaSession(source: "tv")
     }
 }
 

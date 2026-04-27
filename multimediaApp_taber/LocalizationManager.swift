@@ -171,6 +171,12 @@ enum L10n {
     static let tapToPlay = "tap_to_play"
     /// Instrucción para detener
     static let tapToStop = "tap_to_stop"
+    /// Conectando
+    static let connecting = "connecting"
+    /// Error de conexión
+    static let connectionError = "connection_error"
+    /// Reintentar
+    static let retry = "retry"
     
     // MARK: - Info View Content
     
