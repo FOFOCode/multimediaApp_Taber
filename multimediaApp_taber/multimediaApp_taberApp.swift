@@ -11,10 +11,13 @@ import AVFoundation
 @main
 struct multimediaApp_taberApp: App {
     @Environment(\.scenePhase) private var scenePhase
+    @AppStorage("isDarkMode") private var isDarkMode = false
     
     var body: some Scene {
         WindowGroup {
             ContentView()
+                .preferredColorScheme(isDarkMode ? .dark : .light)
+                .animation(.easeInOut(duration: 0.5), value: isDarkMode)
                 .onAppear {
                     setupNotifications()
                 }

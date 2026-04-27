@@ -150,17 +150,25 @@ struct InfoView: View {
                                 .foregroundStyle(Color.cobaltBlue)
 
                             HStack(spacing: 0) {
-                                Link("Política de Privacidad", destination: URL(string: "https://tupagina.com/privacy")!)
-                                    .font(.subheadline)
-                                    .foregroundStyle(Color.dodgerBlue)
+                                NavigationLink {
+                                    TermsAndConditionsView()
+                                } label: {
+                                    Text("Política de Privacidad")
+                                        .font(.subheadline)
+                                        .foregroundStyle(Color.dodgerBlue)
+                                }
 
                                 Text("  •  ")
                                     .font(.subheadline)
                                     .foregroundStyle(Color.gray)
 
-                                Link("Términos de Servicio (EULA)", destination: URL(string: "https://tupagina.com/eula")!)
-                                    .font(.subheadline)
-                                    .foregroundStyle(Color.dodgerBlue)
+                                NavigationLink {
+                                    TermsAndConditionsView()
+                                } label: {
+                                    Text("Términos de Servicio (EULA)")
+                                        .font(.subheadline)
+                                        .foregroundStyle(Color.dodgerBlue)
+                                }
                             }
                         }
                         .padding(.top, 16)

@@ -4,6 +4,7 @@ struct HomeView: View {
     @StateObject private var dashboard = HomeDashboardService.shared
     @StateObject private var localization = LocalizationManager.shared
     @State private var appearAnimation = false
+    @AppStorage("isDarkMode") private var isDarkMode = false
 
     var body: some View {
         NavigationStack {
@@ -58,15 +59,44 @@ struct HomeView: View {
 
                 Spacer()
 
-                ZStack {
-                    Circle()
-                        .fill(Color.aliceBlue.opacity(0.18))
-                        .frame(width: 52, height: 52)
-
-                    Image(systemName: "book.closed.fill")
-                        .font(.system(size: 22, weight: .semibold))
-                        .foregroundStyle(Color.aliceBlue)
+                Button {
+                    let newMode = !isDarkMode
+                    
+                    #if canImport(UIKit)
+                    // Efecto de fundido cruzado para la ventana principal para suavizar la transición en Dynamic Colors
+                    if let windowScene = UIApplication.shared.connectedScenes.first(where: { $0.activationState == .foregroundActive }) as? UIWindowScene,
+                       let window = windowScene.windows.first(where: { $0.isKeyWindow }) {
+                        
+                        UIView.transition(with: window, duration: 0.5, options: .transitionCrossDissolve, animations: {
+                            isDarkMode = newMode
+                        }, completion: nil)
+                    } else {
+                        withAnimation(.easeInOut(duration: 0.5)) {
+                            isDarkMode = newMode
+                        }
+                    }
+                    #else
+                    withAnimation(.easeInOut(duration: 0.5)) {
+                        isDarkMode = newMode
+                    }
+                    #endif
+                } label: {
+                    ZStack {
+                        Circle()
+                            .fill(Color.aliceBlue.opacity(0.18))
+                            .frame(width: 52, height: 52)
+                        
+                        Image(systemName: isDarkMode ? "moon.stars.fill" : "sun.max.fill")
+                            .font(.system(size: 22, weight: .semibold))
+                            .foregroundStyle(Color.aliceBlue)
+                            .rotationEffect(.degrees(isDarkMode ? 360 : 0))
+                            .scaleEffect(isDarkMode ? 1.0 : 1.1)
+                            .animation(.spring(response: 0.5, dampingFraction: 0.6), value: isDarkMode)
+                            .transition(.opacity)
+                            .id(isDarkMode) // Fuerza que se recree la imagen para aplicar la transición
+                    }
                 }
+                .buttonStyle(.plain)
             }
 
             Text("Palabra, radio y TV en un solo lugar")

@@ -71,7 +71,7 @@ struct SplashView: View {
                                 )
                             )
                         
-                        Text("Tu entretenimiento en un solo lugar")
+                        Text("Caminando por fe, no por vista")
                             .font(.subheadline.weight(.medium))
                             .foregroundStyle(Color.twitterBlue.opacity(0.8))
                     }
