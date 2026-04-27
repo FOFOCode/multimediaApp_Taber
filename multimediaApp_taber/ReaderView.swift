@@ -46,6 +46,7 @@ struct ReaderView: View {
     
     @StateObject private var localization = LocalizationManager.shared
     @StateObject private var bibleService = BibleService.shared
+    @StateObject private var offlineService = OfflineBibleService.shared
     @State private var appearAnimation = false
     @State private var verses: [VerseItem] = []
     @State private var isLoading = true
@@ -239,6 +240,13 @@ struct ReaderView: View {
     }
     
     private func loadChapter() {
+        if let cached = offlineService.loadChapterOffline(chapterId: chapter.id) {
+            verses = parseVerses(from: cached.content)
+            isLoading = false
+            saveReadingProgress()
+            return
+        }
+        
         Task {
             do {
                 let bibleId = bibleService.getBibleForLanguage(localization.currentLanguage)
@@ -248,13 +256,26 @@ struct ReaderView: View {
                     self.verses = parseVerses(from: chapterData.content)
                     self.isLoading = false
                 }
+                saveReadingProgress()
             } catch {
-                await MainActor.run {
-                    self.verses = [VerseItem(number: "1", text: L10n.errorLoadingChapter.localized())]
-                    self.isLoading = false
+                if let cached = offlineService.loadChapterOffline(chapterId: chapter.id) {
+                    await MainActor.run {
+                        self.verses = parseVerses(from: cached.content)
+                        self.isLoading = false
+                    }
+                } else {
+                    await MainActor.run {
+                        self.verses = [VerseItem(number: "1", text: L10n.errorLoadingChapter.localized())]
+                        self.isLoading = false
+                    }
                 }
             }
         }
+    }
+    
+    private func saveReadingProgress() {
+        let progress = Double(verses.count) > 0 ? 0.5 : 0.0
+        offlineService.updateReadingProgress(chapterId: chapter.id, verse: verses.count, percentage: progress)
     }
     
     private func parseVerses(from content: String) -> [VerseItem] {

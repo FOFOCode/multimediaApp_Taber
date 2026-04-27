@@ -172,6 +172,14 @@ struct HomeView: View {
                         subtitle: L10n.infoSubtitle.localized()
                     )
                 }
+
+                NavigationLink(destination: NotificationsSettingsView()) {
+                    QuickAccessCard(
+                        icon: "bell.fill",
+                        title: "Notificaciones",
+                        subtitle: "Recordatorios"
+                    )
+                }
             }
         }
         .opacity(appearAnimation ? 1 : 0)

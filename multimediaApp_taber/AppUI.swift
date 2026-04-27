@@ -67,6 +67,7 @@ struct AppBackground: View {
 
 struct AppHeaderBar: View {
     let title: String
+    var trailingButton: AnyView? = nil
 
     @Environment(\.dismiss) private var dismiss
     @State private var isPressed = false
@@ -110,8 +111,12 @@ struct AppHeaderBar: View {
 
             Spacer(minLength: 0)
 
-            Color.clear
-                .frame(width: 44, height: 44)
+            if let button = trailingButton {
+                button
+            } else {
+                Color.clear
+                    .frame(width: 44, height: 44)
+            }
         }
         .padding(.horizontal, 16)
         .padding(.top, 12)

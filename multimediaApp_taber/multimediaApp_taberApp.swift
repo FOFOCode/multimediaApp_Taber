@@ -15,16 +15,31 @@ struct multimediaApp_taberApp: App {
     var body: some Scene {
         WindowGroup {
             ContentView()
+                .onAppear {
+                    setupNotifications()
+                }
         }
         .onChange(of: scenePhase) { oldPhase, newPhase in
             switch newPhase {
             case .background, .inactive:
                 stopAllMedia()
             case .active:
-                break
+                NotificationService.shared.clearBadge()
+                Task {
+                    await NotificationService.shared.fetchDailyVerse()
+                    await NotificationService.shared.scheduleAllNotifications()
+                }
             @unknown default:
                 break
             }
+        }
+    }
+    
+    private func setupNotifications() {
+        Task {
+            await NotificationService.shared.checkAuthorizationStatus()
+            await NotificationService.shared.fetchDailyVerse()
+            await NotificationService.shared.scheduleAllNotifications()
         }
     }
     

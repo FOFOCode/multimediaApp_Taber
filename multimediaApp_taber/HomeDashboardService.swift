@@ -59,7 +59,7 @@ final class HomeDashboardService: ObservableObject {
             let results = try await BibleService.shared.searchVerses(bibleId: bibleId, query: query)
 
             if let picked = pickVerse(for: Date(), from: results) {
-                let cleanText = cleanHTMLTags(from: picked.text)
+                let cleanText = cleanHTMLTags(from: picked.displayText)
                 updateVerse(text: cleanText, reference: picked.reference, dateKey: todayKey)
             } else {
                 applyOfflineFallback(dateKey: todayKey)

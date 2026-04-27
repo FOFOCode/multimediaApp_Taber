@@ -4,23 +4,30 @@ struct BibleView: View {
     @StateObject private var localization = LocalizationManager.shared
     @StateObject private var bibleService = BibleService.shared
     @StateObject private var favoritesService = FavoritesService.shared
+    @StateObject private var offlineService = OfflineBibleService.shared
     @State private var appearAnimation = false
     @State private var selectedTab = 0
     @State private var searchText = ""
     @State private var showingSearch = false
     @Environment(\.dismiss) private var dismiss
-    
-    var body: some View {
+    @State private var showOfflineSettings = false
+
+var body: some View {
         ZStack {
             AppBackground(style: .detail)
             
             VStack(spacing: 0) {
                 AppHeaderBar(title: L10n.bibleTitle.localized())
                 
-                ScrollView {
-                    VStack(spacing: 24) {
+                NavigationStack {
+                    ScrollView {
+                        VStack(spacing: 24) {
                         // Encabezado
                         VStack(spacing: 12) {
+                            Text(L10n.bibleTitle.localized())
+                                .font(.system(size: 32, weight: .bold, design: .rounded))
+                                .foregroundStyle(Color.cobaltBlue)
+                            
                             Image(systemName: "book.fill")
                                 .font(.system(size: 50))
                                 .foregroundStyle(
@@ -32,13 +39,43 @@ struct BibleView: View {
                                 )
                                 .symbolEffect(.pulse)
                             
-                            Text(L10n.bibleTitle.localized())
-                                .font(.system(size: 32, weight: .bold, design: .rounded))
-                                .foregroundStyle(Color.cobaltBlue)
-                            
                             Text(L10n.bibleSubtitle.localized())
                                 .font(.subheadline)
                                 .foregroundStyle(Color.twitterBlue.opacity(0.7))
+                            
+                            Button {
+                                showOfflineSettings = true
+                            } label: {
+                                if offlineService.hasFullBible() {
+                                    HStack {
+                                        Image(systemName: "checkmark.circle.fill")
+                                            .foregroundStyle(.green)
+                                        Text("Descargada")
+                                            .font(.caption)
+                                            .foregroundStyle(.green)
+                                    }
+                                    .padding(.horizontal, 12)
+                                    .padding(.vertical, 6)
+                                    .background(
+                                        Capsule()
+                                            .fill(Color.green.opacity(0.15))
+                                    )
+                                } else {
+                                    HStack {
+                                        Image(systemName: "arrow.down.circle.fill")
+                                            .foregroundStyle(Color.twitterBlue)
+                                        Text("Descargar")
+                                            .font(.caption)
+                                            .foregroundStyle(Color.twitterBlue)
+                                    }
+                                    .padding(.horizontal, 12)
+                                    .padding(.vertical, 6)
+                                    .background(
+                                        Capsule()
+                                            .fill(Color.twitterBlue.opacity(0.15))
+                                    )
+                                }
+                            }
                         }
                         .padding(.top, 20)
                         .opacity(appearAnimation ? 1 : 0)
@@ -68,9 +105,13 @@ struct BibleView: View {
                         .animation(.spring(response: 0.5), value: selectedTab)
                     }
                 }
+                .toolbar(.hidden, for: .navigationBar)
+                .fullScreenCover(isPresented: $showOfflineSettings) {
+                    BibleOfflineSettingsView()
+                }
+            }
             }
         }
-        .toolbar(.hidden, for: .navigationBar)
         .onAppear {
             // Cargar libros de la Biblia según el idioma actual
             bibleService.loadBibleData(language: localization.currentLanguage)
@@ -223,6 +264,8 @@ struct SearchView: View {
                 
                 TextField(L10n.searchPlaceholder.localized(), text: $searchText)
                     .textFieldStyle(.plain)
+                    .foregroundStyle(Color.cobaltBlue)
+                    .autocorrectionDisabled(true)
                     .onSubmit {
                         performSearch()
                     }
@@ -283,14 +326,15 @@ struct SearchView: View {
     }
     
     private func performSearch() {
-        guard !searchText.isEmpty else { return }
+        let query = searchText.trimmingCharacters(in: .whitespacesAndNewlines)
+        guard !query.isEmpty else { return }
         
         isSearching = true
         
         Task {
             do {
                 let bibleId = bibleService.getBibleForLanguage(localization.currentLanguage)
-                let results = try await bibleService.searchVerses(bibleId: bibleId, query: searchText)
+                let results = try await bibleService.searchVerses(bibleId: bibleId, query: query)
                 
                 await MainActor.run {
                     self.searchResults = results
@@ -324,7 +368,7 @@ struct SearchResultCard: View {
                     favoritesService.toggleFavorite(
                         id: result.id,
                         reference: result.reference,
-                        text: result.text,
+                        text: result.displayText,
                         bookName: result.bookId
                     )
                 } label: {
@@ -333,9 +377,9 @@ struct SearchResultCard: View {
                 }
             }
             
-            Text(cleanHTMLTags(from: result.text))
+            Text(cleanHTMLTags(from: result.displayText))
                 .font(.body)
-                .foregroundStyle(Color.primary)
+                .foregroundStyle(Color.cobaltBlue) // Se cambió de Color.primary para que sea siempre visible en modo oscuro
         }
         .padding(16)
         .background(
@@ -346,6 +390,7 @@ struct SearchResultCard: View {
     }
     
     private func cleanHTMLTags(from text: String) -> String {
+        guard !text.isEmpty else { return "Texto no disponible" }
         return text.replacingOccurrences(of: "<[^>]+>", with: "", options: .regularExpression)
     }
 }
@@ -414,7 +459,7 @@ struct FavoriteCard: View {
             
             Text(favorite.text)
                 .font(.body)
-                .foregroundStyle(Color.primary)
+                .foregroundStyle(Color.cobaltBlue) // Cambiado a Color.cobaltBlue en lugar de Color.primary para Dark Mode issue
         }
         .padding(16)
         .background(

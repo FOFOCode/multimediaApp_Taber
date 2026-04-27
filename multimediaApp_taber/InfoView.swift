@@ -139,8 +139,35 @@ struct InfoView: View {
                         }
                         .padding(.top, 8)
                         .opacity(appearAnimation ? 1 : 0)
+
+                        // Enlaces Legales (Para App Store)
+                        VStack(spacing: 16) {
+                            Divider()
+                                .padding(.horizontal, 20)
+
+                            Text("Información Legal")
+                                .font(.headline.weight(.bold))
+                                .foregroundStyle(Color.cobaltBlue)
+
+                            HStack(spacing: 0) {
+                                Link("Política de Privacidad", destination: URL(string: "https://tupagina.com/privacy")!)
+                                    .font(.subheadline)
+                                    .foregroundStyle(Color.dodgerBlue)
+
+                                Text("  •  ")
+                                    .font(.subheadline)
+                                    .foregroundStyle(Color.gray)
+
+                                Link("Términos de Servicio (EULA)", destination: URL(string: "https://tupagina.com/eula")!)
+                                    .font(.subheadline)
+                                    .foregroundStyle(Color.dodgerBlue)
+                            }
+                        }
+                        .padding(.top, 16)
+                        .padding(.bottom, 40)
+                        .opacity(appearAnimation ? 1 : 0)
                         
-                        Spacer(minLength: 40)
+                        Spacer(minLength: 20)
                     }
                     .padding(.horizontal, 20)
                 }
