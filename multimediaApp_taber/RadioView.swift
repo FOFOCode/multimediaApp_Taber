@@ -2,9 +2,34 @@ import SwiftUI
 import AVFoundation
 import Combine
 
+struct RadioStation: Identifiable, Hashable {
+    let id = UUID()
+    let name: String
+    let description: String
+    let dial: String
+    let urlString: String
+}
+
 struct RadioView: View {
     @ObservedObject private var localization = LocalizationManager.shared
-    private let radioURL = URL(string: "https://uk5freenew.listen2myradio.com/live.mp3?typeportmount=s1_39762_stream_848017234")!
+    
+    let stations = [
+        RadioStation(
+            name: "Radio Bautista Original",
+            description: "La señal tradicional directa desde la iglesia",
+            dial: "106.1 FM",
+            urlString: "https://uk5freenew.listen2myradio.com/live.mp3?typeportmount=s1_39762_stream_848017234"
+        ),
+        RadioStation(
+            name: "Radio Neuma Stereo",
+            description: "Radio in your ears",
+            dial: "Digital",
+            urlString: "https://uk24freenew.listen2myradio.com/live.mp3?typeportmount=s1_19235_stream_187124824"
+        )
+    ]
+    
+    @State private var selectedStationIndex = 0
+    
     @State private var player: AVPlayer? = nil
     @State private var isPlaying = false
     @State private var isLoading = false
@@ -22,7 +47,7 @@ struct RadioView: View {
                 AppHeaderBar(title: L10n.radio.localized())
                 
                 ScrollView(showsIndicators: false) {
-                    VStack(spacing: 32) {
+                    VStack(spacing: 16) {
                         // Visualizador de audio
                         ZStack {
                             // Anillos pulsantes cuando está reproduciendo
@@ -33,7 +58,7 @@ struct RadioView: View {
                             // Círculo de fondo glassmorphism
                             Circle()
                                 .fill(.ultraThinMaterial)
-                                .frame(width: 150, height: 150)
+                                .frame(width: 110, height: 110)
                                 .shadow(color: Color.cobaltBlue.opacity(0.2), radius: 20, x: 0, y: 10)
                             
                             // Gradiente interior
@@ -47,11 +72,11 @@ struct RadioView: View {
                                         endPoint: .bottomTrailing
                                     )
                                 )
-                                .frame(width: 140, height: 140)
+                                .frame(width: 100, height: 100)
                             
                             // Icono de radio
                             Image(systemName: isPlaying ? "waveform" : "dot.radiowaves.left.and.right")
-                                .font(.system(size: 50, weight: .medium))
+                                .font(.system(size: 36, weight: .medium))
                                 .foregroundStyle(
                                     LinearGradient(
                                         colors: [Color.dodgerBlue, Color.twitterBlue],
@@ -61,20 +86,71 @@ struct RadioView: View {
                                 )
                                 .symbolEffect(.variableColor, options: .repeating, isActive: isPlaying)
                         }
-                        .padding(.top, 40)
+                        .padding(.top, 16)
                         .opacity(appearAnimation ? 1 : 0)
                         .scaleEffect(appearAnimation ? 1 : 0.8)
                         
-                        // Información de la estación
-                        VStack(spacing: 12) {
-                            Text(L10n.radioTitle.localized())
-                                .font(.system(size: 32, weight: .bold, design: .rounded))
+                        // Selector de Emisoras
+                        VStack(alignment: .leading, spacing: 12) {
+                            Text("Elige tu emisora")
+                                .font(.headline)
                                 .foregroundStyle(Color.cobaltBlue)
+                                .padding(.horizontal, 24)
+                            
+                            ScrollView(.horizontal, showsIndicators: false) {
+                                HStack(spacing: 16) {
+                                    ForEach(0..<stations.count, id: \.self) { index in
+                                        Button {
+                                            selectedStationIndex = index
+                                            // Detener cualquier radio de fondo y cambiar
+                                            stopPlayback()
+                                        } label: {
+                                            VStack(alignment: .leading, spacing: 6) {
+                                                Image(systemName: "antenna.radiowaves.left.and.right")
+                                                    .font(.title2)
+                                                    .foregroundStyle(selectedStationIndex == index ? .white : Color.twitterBlue)
+                                                
+                                                Text(stations[index].name)
+                                                    .font(.subheadline.weight(.semibold))
+                                                    .foregroundStyle(selectedStationIndex == index ? .white : Color.cobaltBlue)
+                                                
+                                                Text(stations[index].dial)
+                                                    .font(.caption)
+                                                    .foregroundStyle(selectedStationIndex == index ? Color.white.opacity(0.8) : Color.gray)
+                                            }
+                                            .padding(16)
+                                            .frame(width: 160, alignment: .leading)
+                                            .background(
+                                                RoundedRectangle(cornerRadius: 16, style: .continuous)
+                                                    .fill(selectedStationIndex == index ? Color.twitterBlue : Color.white)
+                                                    .shadow(color: Color.black.opacity(0.06), radius: 8, x: 0, y: 4)
+                                            )
+                                        }
+                                        .buttonStyle(.plain)
+                                    }
+                                }
+                                .padding(.horizontal, 24)
+                                .padding(.vertical, 8)
+                            }
+                        }
+                        .opacity(appearAnimation ? 1 : 0)
+                        
+                        // Información de la estación seleccionada
+                        VStack(spacing: 12) {
+                            Text(stations[selectedStationIndex].name)
+                                .font(.system(size: 28, weight: .bold, design: .rounded))
+                                .foregroundStyle(Color.cobaltBlue)
+                                .multilineTextAlignment(.center)
+                            
+                            Text(stations[selectedStationIndex].description)
+                                .font(.subheadline)
+                                .foregroundStyle(Color.gray)
+                                .multilineTextAlignment(.center)
                             
                             HStack(spacing: 8) {
                                 Image(systemName: "antenna.radiowaves.left.and.right")
                                     .font(.system(size: 14, weight: .semibold))
-                                Text("106 FM")
+                                Text(stations[selectedStationIndex].dial)
                                     .font(.headline.weight(.semibold))
                             }
                             .foregroundStyle(Color.twitterBlue)
@@ -84,8 +160,6 @@ struct RadioView: View {
                                 Capsule()
                                     .fill(Color.dodgerBlue.opacity(0.12))
                             )
-                            
-                            // Estado de reproducción
                             HStack(spacing: 6) {
                                 Circle()
                                     .fill(isPlaying ? Color.green : Color.gray.opacity(0.5))
@@ -121,8 +195,8 @@ struct RadioView: View {
                                 // Sombra exterior
                                 Circle()
                                     .fill(Color.cobaltBlue.opacity(0.15))
-                                    .frame(width: 120, height: 120)
-                                    .blur(radius: 10)
+                                    .frame(width: 90, height: 90)
+                                    .blur(radius: 8)
                                 
                                 // Círculo principal
                                 Circle()
@@ -135,8 +209,8 @@ struct RadioView: View {
                                             endPoint: .bottomTrailing
                                         )
                                     )
-                                    .frame(width: 100, height: 100)
-                                    .shadow(color: Color.cobaltBlue.opacity(0.3), radius: 15, x: 0, y: 8)
+                                    .frame(width: 76, height: 76)
+                                    .shadow(color: Color.cobaltBlue.opacity(0.3), radius: 10, x: 0, y: 6)
                                 
                                 // Borde brillante
                                 Circle()
@@ -148,18 +222,18 @@ struct RadioView: View {
                                         ),
                                         lineWidth: 2
                                     )
-                                    .frame(width: 100, height: 100)
+                                    .frame(width: 76, height: 76)
                                 
                                 // Icono
                                 Image(systemName: isPlaying ? "stop.fill" : "play.fill")
-                                    .font(.system(size: 40, weight: .semibold))
+                                    .font(.system(size: 30, weight: .semibold))
                                     .foregroundStyle(Color.aliceBlue)
                                     .offset(x: isPlaying ? 0 : 3)
                             }
                             .scaleEffect(isPlaying ? 1.05 : 1.0)
                         }
                         .accessibilityLabel(isPlaying ? "Detener radio" : "Reproducir radio")
-                        .padding(.top, 16)
+                        .padding(.top, 8)
                         .opacity(appearAnimation ? 1 : 0)
                         
                         // Indicador de carga
@@ -222,6 +296,10 @@ struct RadioView: View {
             stopPlayback()
         }
     }
+    
+    private var radioURL: URL {
+        return URL(string: stations[selectedStationIndex].urlString)!
+    }
 
     private func startPlayback() {
         errorMessage = nil
@@ -230,6 +308,9 @@ struct RadioView: View {
         player = nil
         
         let playerItem = AVPlayerItem(url: radioURL)
+        // Optimización de batería: Limitar buffer para stream en vivo
+        playerItem.preferredForwardBufferDuration = 5.0
+        
         player = AVPlayer(playerItem: playerItem)
         player?.automaticallyWaitsToMinimizeStalling = true
         
@@ -286,6 +367,16 @@ struct RadioView: View {
         HomeDashboardService.shared.endMediaSession(source: "radio")
         isPlaying = false
         waveAnimation = false
+        
+        // Optimización de batería de Apple: Desactivar la sesión de audio al pausar
+        // permite que el hardware de audio entre en reposo.
+        DispatchQueue.global(qos: .background).async {
+            do {
+                try AVAudioSession.sharedInstance().setActive(false, options: .notifyOthersOnDeactivation)
+            } catch {
+                print("No se pudo desactivar la sesión de audio: \(error.localizedDescription)")
+            }
+        }
     }
 
     private func configureAudioSessionIfPossible() {

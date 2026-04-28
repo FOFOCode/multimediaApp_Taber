@@ -254,11 +254,11 @@ struct HomeView: View {
                     )
                 }
 
-                NavigationLink(destination: FavoritesView()) {
+                NavigationLink(destination: ContactView()) {
                     QuickAccessCard(
-                        icon: "heart.fill",
-                        title: "Favoritos",
-                        subtitle: "Tus pasajes"
+                        icon: "envelope.fill",
+                        title: "Contacto",
+                        subtitle: "Comunícate"
                     )
                 }
 

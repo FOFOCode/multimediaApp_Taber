@@ -55,9 +55,10 @@ struct multimediaApp_taberApp: App {
     
     private func deactivateAudioSession() {
         do {
-            try AVAudioSession.sharedInstance().setActive(false, options: .notifyOthersOnDeactivation)
+            let session = AVAudioSession.sharedInstance()
+            try session.setActive(false, options: .notifyOthersOnDeactivation)
         } catch {
-            print("Error deactivateAudioSession: \(error)")
+            print("Error configurando audio session: \(error)")
         }
     }
 }

@@ -140,6 +140,38 @@ struct InfoView: View {
                         .padding(.top, 8)
                         .opacity(appearAnimation ? 1 : 0)
 
+                        // Contacto
+                        VStack(spacing: 12) {
+                            HStack(spacing: 8) {
+                                Image(systemName: "envelope.circle.fill")
+                                    .font(.system(size: 20))
+                                    .foregroundStyle(Color.twitterBlue)
+                                
+                                Text("Contacto")
+                                    .font(.headline.weight(.semibold))
+                                    .foregroundStyle(Color.cobaltBlue)
+                            }
+                            
+                            VStack(spacing: 6) {
+                                Text("Pastor General Roger Barahona")
+                                    .font(.subheadline.weight(.semibold))
+                                    .foregroundStyle(Color.cobaltBlue)
+                                
+                                Link("Pastor@tabernaculosantana.net", destination: URL(string: "mailto:Pastor@tabernaculosantana.net")!)
+                                    .font(.subheadline)
+                                    .foregroundStyle(Color.dodgerBlue)
+                            }
+                            .padding(.horizontal, 20)
+                            .padding(.vertical, 16)
+                            .frame(maxWidth: .infinity)
+                            .background(
+                                RoundedRectangle(cornerRadius: 12, style: .continuous)
+                                    .fill(Color.dodgerBlue.opacity(0.1))
+                            )
+                        }
+                        .padding(.top, 8)
+                        .opacity(appearAnimation ? 1 : 0)
+
                         // Enlaces Legales (Para App Store)
                         VStack(spacing: 16) {
                             Divider()

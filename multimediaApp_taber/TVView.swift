@@ -261,6 +261,15 @@ struct TVView: View {
         player = nil
         playerItem = nil
         HomeDashboardService.shared.endMediaSession(source: "tv")
+        
+        // Optimización de batería y recursos: Desactivar la sesión de audio
+        DispatchQueue.global(qos: .background).async {
+            do {
+                try AVAudioSession.sharedInstance().setActive(false, options: .notifyOthersOnDeactivation)
+            } catch {
+                print("Error configurando audio session: \(error)")
+            }
+        }
     }
 }
 
