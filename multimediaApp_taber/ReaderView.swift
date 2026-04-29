@@ -290,7 +290,7 @@ struct ReaderView: View {
                             .padding(24)
                             .background(
                                 RoundedRectangle(cornerRadius: 20, style: .continuous)
-                                    .fill(Color.white)
+                                    .fill(Color.cardBackground)
                                     .shadow(color: Color.black.opacity(0.2), radius: 16, x: 0, y: -4)
                             )
                             .padding(.horizontal, 20)

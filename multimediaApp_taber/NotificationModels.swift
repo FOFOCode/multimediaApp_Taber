@@ -7,7 +7,7 @@ enum NotificationType: String, Codable, CaseIterable {
 
     var title: String {
         switch self {
-        case .dailyVerse: return "Versículo Diario"
+        case .dailyVerse: return L10n.dailyVerse.localized()
         case .serviceReminder: return "Recordatorio de Culto"
         case .custom: return "Personalizado"
         }
@@ -52,7 +52,7 @@ struct ChurchNotification: Identifiable, Codable {
     var weekdaysString: String {
         let days = ["Dom", "Lun", "Mar", "Mié", "Jue", "Vie", "Sáb"]
         if repeatDays.count == 7 {
-            return "Todos los días"
+            return L10n.everyDay.localized()
         } else if repeatDays == [1, 2, 3, 4, 5] {
             return "Lunes a Viernes"
         } else if repeatDays == [7] {

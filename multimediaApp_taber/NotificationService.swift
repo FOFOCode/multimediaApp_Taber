@@ -102,7 +102,7 @@ final class NotificationService: ObservableObject {
         [
             ChurchNotification(
                 type: .dailyVerse,
-                title: "Versículo Diario",
+                title: L10n.dailyVerse.localized(),
                 body: "Recibe tu versículo del día",
                 hour: 8,
                 minute: 0,

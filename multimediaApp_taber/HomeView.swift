@@ -78,24 +78,6 @@ struct HomeView: View {
                                 if localization.currentLanguage == "en" { Image(systemName: "checkmark") }
                             }
                         }
-                        
-                        Button {
-                            localization.changeLanguage(to: "pt")
-                        } label: {
-                            HStack {
-                                Text("Português")
-                                if localization.currentLanguage == "pt" { Image(systemName: "checkmark") }
-                            }
-                        }
-                        
-                        Button {
-                            localization.changeLanguage(to: "fr")
-                        } label: {
-                            HStack {
-                                Text("Français")
-                                if localization.currentLanguage == "fr" { Image(systemName: "checkmark") }
-                            }
-                        }
                     } label: {
                         ZStack {
                             Circle()
@@ -150,7 +132,7 @@ struct HomeView: View {
                 }
             }
 
-            Text("Palabra, radio y TV en un solo lugar")
+            Text(L10n.homeTagline.localized())
                 .font(.subheadline.weight(.medium))
                 .foregroundStyle(Color.aliceBlue.opacity(0.86))
 
@@ -158,7 +140,7 @@ struct HomeView: View {
                 Image(systemName: "sparkles")
                     .font(.caption.weight(.semibold))
 
-                Text("Inspiración diaria")
+                Text(L10n.dailyInspiration.localized())
                     .font(.caption.weight(.semibold))
 
                 Spacer()
@@ -180,7 +162,7 @@ struct HomeView: View {
 
     private var verseOfTheDaySection: some View {
         VStack(alignment: .leading, spacing: 10) {
-            sectionTitle("Versiculo del dia")
+            sectionTitle(L10n.verseOfTheDay.localized())
 
             VStack(alignment: .leading, spacing: 12) {
                 if dashboard.isLoadingVerse && dashboard.verseText.isEmpty {
@@ -219,7 +201,7 @@ struct HomeView: View {
 
     private var quickAccessSection: some View {
         VStack(alignment: .leading, spacing: 12) {
-            sectionTitle("Accesos rapidos")
+            sectionTitle(L10n.quickAccess.localized())
 
             LazyVGrid(columns: [GridItem(.flexible()), GridItem(.flexible())], spacing: 12) {
                 NavigationLink(destination: BibleView()) {
@@ -257,16 +239,16 @@ struct HomeView: View {
                 NavigationLink(destination: ContactView()) {
                     QuickAccessCard(
                         icon: "envelope.fill",
-                        title: "Contacto",
-                        subtitle: "Comunícate"
+                        title: L10n.contact.localized(),
+                        subtitle: L10n.communicate.localized()
                     )
                 }
 
                 NavigationLink(destination: NotificationsSettingsView()) {
                     QuickAccessCard(
                         icon: "bell.fill",
-                        title: "Notificaciones",
-                        subtitle: "Recordatorios"
+                        title: L10n.notifications.localized(),
+                        subtitle: L10n.reminders.localized()
                     )
                 }
             }
@@ -277,18 +259,18 @@ struct HomeView: View {
 
     private var journeySection: some View {
         VStack(alignment: .leading, spacing: 12) {
-            sectionTitle("Tu jornada espiritual")
+            sectionTitle(L10n.spiritualJourney.localized())
 
             JourneyProgressCard(
-                title: "Plan Semanal",
-                subtitle: "Check-in diario en la aplicacion",
+                title: L10n.weeklyPlan.localized(),
+                subtitle: L10n.dailyCheckIn.localized(),
                 progress: dashboard.weeklyPlanProgress,
                 badgeText: dashboard.weeklyPlanBadgeText
             )
 
             JourneyProgressCard(
-                title: "Tiempo en Palabra",
-                subtitle: "Minutos acumulados en Radio y TV hoy",
+                title: L10n.timeInWord.localized(),
+                subtitle: L10n.accumulatedMinutes.localized(),
                 progress: dashboard.minutesProgress,
                 badgeText: dashboard.minutesBadgeText
             )

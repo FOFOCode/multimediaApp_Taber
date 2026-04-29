@@ -275,4 +275,92 @@ enum L10n {
     static let done = "done"
     /// Error al cargar capítulo
     static let errorLoadingChapter = "error_loading_chapter"
+    
+    // MARK: - Home View
+    
+    static let homeTagline = "home_tagline"
+    static let dailyInspiration = "daily_inspiration"
+    static let verseOfTheDay = "verse_of_the_day"
+    static let quickAccess = "quick_access"
+    static let contact = "contact"
+    static let communicate = "communicate"
+    static let notifications = "notifications"
+    static let reminders = "reminders"
+    static let spiritualJourney = "spiritual_journey"
+    static let weeklyPlan = "weekly_plan"
+    static let dailyCheckIn = "daily_checkin"
+    static let timeInWord = "time_in_word"
+    static let accumulatedMinutes = "accumulated_minutes"
+    
+    // MARK: - Dashboard Fallbacks
+    
+    static let verseLoadError = "verse_load_error"
+    static let noConnection = "no_connection"
+    static let noContentFound = "no_content_found"
+    static let readingOfDay = "reading_of_day"
+    
+    // MARK: - Extra Views
+    
+    static let contactUs = "contact_us"
+    static let generalPastor = "general_pastor"
+    static let sendMessage = "send_message"
+    static let legalInfo = "legal_info"
+    static let privacyPolicy = "privacy_policy"
+    static let termsOfService = "terms_of_service"
+    
+    static let loading = "loading"
+    static let videoLoadError = "video_load_error"
+    
+    static let offlineBible = "offline_bible"
+    static let downloadBiblePrompt = "download_bible_prompt"
+    static let downloading = "downloading"
+    static let bibleDownloaded = "bible_downloaded"
+    static let downloadFullBiblePrompt = "download_full_bible_prompt"
+    static let downloadBible = "download_bible"
+    static let readingProgress = "reading_progress"
+    static let continueReading = "continue_reading"
+    static let noProgressSaved = "no_progress_saved"
+    static let storage = "storage"
+    static let downloadedChapters = "downloaded_chapters"
+    static let spaceUsed = "space_used"
+    static let offlineModeActive = "offline_mode_active"
+    static let clearCache = "clear_cache"
+    
+    static let notificationsPrompt = "notifications_prompt"
+    static let addReminder = "add_reminder"
+    static let noRemindersConfigured = "no_reminders_configured"
+    
+    static let splashTagline = "splash_tagline"
+    static let downloaded = "downloaded"
+    static let download = "download"
+    static let addFavoritesPrompt = "add_favorites_prompt"
+    static let goBack = "go_back"
+    static let chooseStation = "choose_station"
+    static let minToday = "min_today"
+    static let ofSevenDays = "of_seven_days"
+    
+    // MARK: - More Missing Views
+    
+    static let radioBautistaDesc = "radio_bautista_desc"
+    static let radioNeumaDesc = "radio_neuma_desc"
+    
+    static let permissionsNotGranted = "permissions_not_granted"
+    static let notificationsEnabled = "notifications_enabled"
+    static let enable = "enable"
+    static let everyDay = "every_day"
+    static let dailyVerse = "daily_verse"
+    
+    static let termsTitle = "terms_title"
+    static let termsAcceptanceTitle = "terms_acceptance_title"
+    static let termsAcceptanceText = "terms_acceptance_text"
+    static let termsLicenseTitle = "terms_license_title"
+    static let termsLicenseText = "terms_license_text"
+    static let termsDisclaimerTitle = "terms_disclaimer_title"
+    static let termsDisclaimerText = "terms_disclaimer_text"
+    static let termsLimitationsTitle = "terms_limitations_title"
+    static let termsLimitationsText = "terms_limitations_text"
+    static let termsPrivacyTitle = "terms_privacy_title"
+    static let termsPrivacyText = "terms_privacy_text"
+    static let termsModificationsTitle = "terms_modifications_title"
+    static let termsModificationsText = "terms_modifications_text"
 }

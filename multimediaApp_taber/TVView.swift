@@ -90,7 +90,7 @@ struct TVView: View {
                                         ProgressView()
                                             .progressViewStyle(CircularProgressViewStyle(tint: .white))
                                             .scaleEffect(1.5)
-                                        Text("Cargando...")
+                                        Text(L10n.loading.localized())
                                             .font(.subheadline)
                                             .foregroundStyle(.white.opacity(0.7))
                                     }
@@ -116,7 +116,7 @@ struct TVView: View {
                                         Image(systemName: "exclamationmark.triangle.fill")
                                             .font(.system(size: 40))
                                             .foregroundStyle(.orange)
-                                        Text("No se pudo cargar el video")
+                                        Text(L10n.videoLoadError.localized())
                                             .font(.subheadline)
                                             .foregroundStyle(.white.opacity(0.8))
                                         Button("Reintentar") {

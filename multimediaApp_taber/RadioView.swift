@@ -16,13 +16,13 @@ struct RadioView: View {
     let stations = [
         RadioStation(
             name: "Radio Bautista Original",
-            description: "La señal tradicional directa desde la iglesia",
+            description: L10n.radioBautistaDesc.localized(),
             dial: "106.1 FM",
             urlString: "https://uk5freenew.listen2myradio.com/live.mp3?typeportmount=s1_39762_stream_848017234"
         ),
         RadioStation(
             name: "Radio Neuma Stereo",
-            description: "Radio in your ears",
+            description: L10n.radioNeumaDesc.localized(),
             dial: "Digital",
             urlString: "https://uk24freenew.listen2myradio.com/live.mp3?typeportmount=s1_19235_stream_187124824"
         )
@@ -92,7 +92,7 @@ struct RadioView: View {
                         
                         // Selector de Emisoras
                         VStack(alignment: .leading, spacing: 12) {
-                            Text("Elige tu emisora")
+                            Text(L10n.chooseStation.localized())
                                 .font(.headline)
                                 .foregroundStyle(Color.cobaltBlue)
                                 .padding(.horizontal, 24)
@@ -112,17 +112,17 @@ struct RadioView: View {
                                                 
                                                 Text(stations[index].name)
                                                     .font(.subheadline.weight(.semibold))
-                                                    .foregroundStyle(selectedStationIndex == index ? .white : Color.cobaltBlue)
+                                                    .foregroundStyle(selectedStationIndex == index ? .white : Color.primary)
                                                 
                                                 Text(stations[index].dial)
                                                     .font(.caption)
-                                                    .foregroundStyle(selectedStationIndex == index ? Color.white.opacity(0.8) : Color.gray)
+                                                    .foregroundStyle(selectedStationIndex == index ? Color.white.opacity(0.8) : Color.secondary)
                                             }
                                             .padding(16)
                                             .frame(width: 160, alignment: .leading)
                                             .background(
                                                 RoundedRectangle(cornerRadius: 16, style: .continuous)
-                                                    .fill(selectedStationIndex == index ? Color.twitterBlue : Color.white)
+                                                    .fill(selectedStationIndex == index ? Color.twitterBlue : Color.cardBackground)
                                                     .shadow(color: Color.black.opacity(0.06), radius: 8, x: 0, y: 4)
                                             )
                                         }

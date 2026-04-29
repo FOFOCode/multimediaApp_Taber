@@ -17,7 +17,7 @@ struct TermsAndConditionsView: View {
                         HStack(spacing: 4) {
                             Image(systemName: "chevron.left")
                                 .font(.system(size: 16, weight: .semibold))
-                            Text("Regresar")
+                            Text(L10n.goBack.localized())
                                 .font(.subheadline.weight(.medium))
                         }
                         .foregroundStyle(Color.cobaltBlue)
@@ -37,62 +37,62 @@ struct TermsAndConditionsView: View {
                 
                 ScrollView {
                     VStack(alignment: .leading, spacing: 20) {
-                        Text("Términos y Condiciones")
+                        Text(L10n.termsTitle.localized())
                             .font(.system(size: 28, weight: .bold, design: .rounded))
                             .foregroundStyle(Color.cobaltBlue)
                             .padding(.bottom, 8)
                         
                         Group {
-                            Text("1. Aceptación de los términos")
+                            Text(L10n.termsAcceptanceTitle.localized())
                                 .font(.headline)
                                 .foregroundStyle(Color.twitterBlue)
-                            Text("Al acceder y utilizar esta aplicación, usted acepta estar sujeto a estos términos y condiciones de uso, todas las leyes y regulaciones aplicables, y acepta que es responsable del cumplimiento de las leyes locales aplicables.")
+                            Text(L10n.termsAcceptanceText.localized())
                                 .font(.body)
-                                .foregroundStyle(Color.black.opacity(0.8))
+                                .foregroundStyle(Color.primary)
                             
-                            Text("2. Licencia de Uso")
+                            Text(L10n.termsLicenseTitle.localized())
                                 .font(.headline)
                                 .foregroundStyle(Color.twitterBlue)
-                            Text("Se concede permiso para descargar temporalmente una copia de la aplicación para visualización transitoria personal y no comercial solamente. Esta es la concesión de una licencia, no una transferencia de título.")
+                            Text(L10n.termsLicenseText.localized())
                                 .font(.body)
-                                .foregroundStyle(Color.black.opacity(0.8))
+                                .foregroundStyle(Color.primary)
                             
-                            Text("3. Descargo de Responsabilidad")
+                            Text(L10n.termsDisclaimerTitle.localized())
                                 .font(.headline)
                                 .foregroundStyle(Color.twitterBlue)
-                            Text("Los materiales en la aplicación se proporcionan 'tal cual'. No otorgamos garantías, expresas o implícitas, y por la presente renunciamos y negamos todas las demás garantías.")
+                            Text(L10n.termsDisclaimerText.localized())
                                 .font(.body)
-                                .foregroundStyle(Color.black.opacity(0.8))
+                                .foregroundStyle(Color.primary)
                             
-                            Text("4. Limitaciones")
+                            Text(L10n.termsLimitationsTitle.localized())
                                 .font(.headline)
                                 .foregroundStyle(Color.twitterBlue)
-                            Text("En ningún caso nosotros o nuestros proveedores seremos responsables de ningún daño (incluidos, sin limitación, daños por pérdida de datos o ganancias, o debido a la interrupción del negocio) que surja del uso o la incapacidad de usar los materiales en la aplicación.")
+                            Text(L10n.termsLimitationsText.localized())
                                 .font(.body)
-                                .foregroundStyle(Color.black.opacity(0.8))
+                                .foregroundStyle(Color.primary)
                         }
                         
                         Group {
-                            Text("5. Privacidad")
+                            Text(L10n.termsPrivacyTitle.localized())
                                 .font(.headline)
                                 .foregroundStyle(Color.twitterBlue)
-                            Text("Su privacidad es importante para nosotros. Es nuestra política respetar su privacidad con respecto a cualquier información que podamos recopilar de usted a través de nuestra aplicación.")
+                            Text(L10n.termsPrivacyText.localized())
                                 .font(.body)
-                                .foregroundStyle(Color.black.opacity(0.8))
+                                .foregroundStyle(Color.primary)
                             
-                            Text("6. Modificaciones de los Términos de Uso")
+                            Text(L10n.termsModificationsTitle.localized())
                                 .font(.headline)
                                 .foregroundStyle(Color.twitterBlue)
-                            Text("Podemos revisar estos términos de uso para nuestra aplicación en cualquier momento sin previo aviso. Al utilizar esta aplicación, usted acepta estar sujeto a la versión actual de estos términos y condiciones de uso.")
+                            Text(L10n.termsModificationsText.localized())
                                 .font(.body)
-                                .foregroundStyle(Color.black.opacity(0.8))
+                                .foregroundStyle(Color.primary)
                         }
                         
                     }
                     .padding(24)
                     .background(
                         RoundedRectangle(cornerRadius: 16)
-                            .fill(Color.white)
+                            .fill(Color.cardBackground)
                             .shadow(color: Color.black.opacity(0.05), radius: 10, x: 0, y: 5)
                     )
                     .padding()

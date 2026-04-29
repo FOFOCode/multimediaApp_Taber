@@ -63,11 +63,11 @@ struct NotificationsSettingsView: View {
             )
             
             VStack(alignment: .leading, spacing: 4) {
-                Text("Notificaciones")
+                Text(L10n.notifications.localized())
                     .font(.system(size: 24, weight: .bold, design: .rounded))
                     .foregroundStyle(Color.cobaltBlue)
 
-                Text("Recibe recordatorios y el versículo diario")
+                Text(L10n.notificationsPrompt.localized())
                     .font(.subheadline)
                     .foregroundStyle(Color.cobaltBlue.opacity(0.78))
             }
@@ -82,14 +82,14 @@ struct NotificationsSettingsView: View {
                 Image(systemName: notificationService.isAuthorized ? "checkmark.circle.fill" : "exclamationmark.triangle.fill")
                     .foregroundStyle(notificationService.isAuthorized ? Color.green : Color.orange)
 
-                Text(notificationService.isAuthorized ? "Notificaciones activadas" : "Permisos no concedidos")
+                Text(notificationService.isAuthorized ? L10n.notificationsEnabled.localized() : L10n.permissionsNotGranted.localized())
                     .font(.subheadline.weight(.medium))
                     .foregroundStyle(Color.cobaltBlue)
 
                 Spacer()
 
                 if !notificationService.isAuthorized {
-                    Button("Activar") {
+                    Button(L10n.enable.localized()) {
                         Task {
                             _ = await notificationService.requestAuthorization()
                         }
@@ -112,7 +112,7 @@ struct NotificationsSettingsView: View {
 
     private var notificationsListSection: some View {
         VStack(alignment: .leading, spacing: 12) {
-            Text("Recordatorios")
+            Text(L10n.reminders.localized())
                 .font(.headline.weight(.semibold))
                 .foregroundStyle(Color.cobaltBlue)
 
@@ -138,7 +138,7 @@ struct NotificationsSettingsView: View {
             } label: {
                 HStack {
                     Image(systemName: "plus.circle.fill")
-                    Text("Agregar recordatorio")
+                    Text(L10n.addReminder.localized())
                 }
                 .font(.subheadline.weight(.semibold))
                 .foregroundStyle(Color.cobaltBlue)
@@ -159,7 +159,7 @@ struct NotificationsSettingsView: View {
                 .font(.system(size: 40))
                 .foregroundStyle(Color.cobaltBlue.opacity(0.5))
 
-            Text("No hay recordatorios configurados")
+            Text(L10n.noRemindersConfigured.localized())
                 .font(.subheadline)
                 .foregroundStyle(Color.cobaltBlue.opacity(0.7))
         }
@@ -312,7 +312,7 @@ struct AddNotificationSheet: View {
                     }
                     .padding(.vertical, 8)
 
-                    Button("Todos los días") {
+                    Button(L10n.everyDay.localized()) {
                         selectedDays = [1, 2, 3, 4, 5, 6, 7]
                     }
                     .font(.caption)

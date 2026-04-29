@@ -13,12 +13,14 @@ import SwiftData
 struct multimediaApp_taberApp: App {
     @Environment(\.scenePhase) private var scenePhase
     @AppStorage("isDarkMode") private var isDarkMode = false
+    @StateObject private var localization = LocalizationManager.shared
     
     var body: some Scene {
         WindowGroup {
             ContentView()
                 .preferredColorScheme(isDarkMode ? .dark : .light)
                 .animation(.easeInOut(duration: 0.5), value: isDarkMode)
+                .environment(\.locale, .init(identifier: localization.currentLanguage))
                 .onAppear {
                     setupNotifications()
                 }

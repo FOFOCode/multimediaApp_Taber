@@ -147,13 +147,13 @@ struct InfoView: View {
                                     .font(.system(size: 20))
                                     .foregroundStyle(Color.twitterBlue)
                                 
-                                Text("Contacto")
+                                Text(L10n.contact.localized())
                                     .font(.headline.weight(.semibold))
                                     .foregroundStyle(Color.cobaltBlue)
                             }
                             
                             VStack(spacing: 6) {
-                                Text("Pastor General Roger Barahona")
+                                Text(L10n.generalPastor.localized())
                                     .font(.subheadline.weight(.semibold))
                                     .foregroundStyle(Color.cobaltBlue)
                                 
@@ -177,7 +177,7 @@ struct InfoView: View {
                             Divider()
                                 .padding(.horizontal, 20)
 
-                            Text("Información Legal")
+                            Text(L10n.legalInfo.localized())
                                 .font(.headline.weight(.bold))
                                 .foregroundStyle(Color.cobaltBlue)
 
@@ -185,7 +185,7 @@ struct InfoView: View {
                                 NavigationLink {
                                     TermsAndConditionsView()
                                 } label: {
-                                    Text("Política de Privacidad")
+                                    Text(L10n.privacyPolicy.localized())
                                         .font(.subheadline)
                                         .foregroundStyle(Color.dodgerBlue)
                                 }
@@ -197,7 +197,7 @@ struct InfoView: View {
                                 NavigationLink {
                                     TermsAndConditionsView()
                                 } label: {
-                                    Text("Términos de Servicio (EULA)")
+                                    Text(L10n.termsOfService.localized())
                                         .font(.subheadline)
                                         .foregroundStyle(Color.dodgerBlue)
                                 }

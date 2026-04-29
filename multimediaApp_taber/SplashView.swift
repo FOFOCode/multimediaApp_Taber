@@ -61,7 +61,7 @@ struct SplashView: View {
                     .opacity(logoOpacity)
                     
                     VStack(spacing: 8) {
-                        Text("Taber Móvil")
+                        Text(L10n.appName.localized())
                             .font(.system(size: 36, weight: .bold, design: .rounded))
                             .foregroundStyle(
                                 LinearGradient(
@@ -71,7 +71,7 @@ struct SplashView: View {
                                 )
                             )
                         
-                        Text("Caminando por fe, no por vista")
+                        Text(L10n.splashTagline.localized())
                             .font(.subheadline.weight(.medium))
                             .foregroundStyle(Color.twitterBlue.opacity(0.8))
                     }

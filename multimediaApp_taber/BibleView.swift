@@ -50,7 +50,7 @@ var body: some View {
                                     HStack {
                                         Image(systemName: "checkmark.circle.fill")
                                             .foregroundStyle(.green)
-                                        Text("Descargada")
+                                        Text(L10n.downloaded.localized())
                                             .font(.caption)
                                             .foregroundStyle(.green)
                                     }
@@ -64,7 +64,7 @@ var body: some View {
                                     HStack {
                                         Image(systemName: "arrow.down.circle.fill")
                                             .foregroundStyle(Color.twitterBlue)
-                                        Text("Descargar")
+                                        Text(L10n.download.localized())
                                             .font(.caption)
                                             .foregroundStyle(Color.twitterBlue)
                                     }
@@ -229,18 +229,18 @@ struct BookCard: View {
             
             Text(book.name)
                 .font(.headline)
-                .foregroundStyle(Color.cobaltBlue)
+                .foregroundStyle(Color.primary)
                 .lineLimit(2)
             
             Text(book.abbreviation)
                 .font(.caption)
-                .foregroundStyle(Color.gray)
+                .foregroundStyle(Color.secondary)
         }
         .padding(16)
         .frame(maxWidth: .infinity, alignment: .leading)
         .background(
             RoundedRectangle(cornerRadius: 16, style: .continuous)
-                .fill(Color.white)
+                .fill(Color.cardBackground)
                 .shadow(color: Color.black.opacity(0.08), radius: 8, x: 0, y: 4)
         )
     }
@@ -264,7 +264,7 @@ struct SearchView: View {
                 
                 TextField(L10n.searchPlaceholder.localized(), text: $searchText)
                     .textFieldStyle(.plain)
-                    .foregroundStyle(Color.cobaltBlue)
+                    .foregroundStyle(Color.primary)
                     .autocorrectionDisabled(true)
                     .onSubmit {
                         performSearch()
@@ -283,7 +283,7 @@ struct SearchView: View {
             .padding(12)
             .background(
                 RoundedRectangle(cornerRadius: 12, style: .continuous)
-                    .fill(Color.white)
+                    .fill(Color.cardBackground)
                     .shadow(color: Color.black.opacity(0.08), radius: 4, x: 0, y: 2)
             )
             .padding(.horizontal, 20)
@@ -381,13 +381,13 @@ struct SearchResultCard: View {
                 .font(.body)
                 .lineLimit(3)
                 .truncationMode(.tail)
-                .foregroundStyle(Color.cobaltBlue) // Se cambió de Color.primary para que sea siempre visible en modo oscuro
+                .foregroundStyle(Color.primary)
         }
         .padding(16)
         .frame(maxWidth: .infinity, alignment: .leading)
         .background(
             RoundedRectangle(cornerRadius: 12, style: .continuous)
-                .fill(Color.white)
+                .fill(Color.cardBackground)
                 .shadow(color: Color.black.opacity(0.08), radius: 4, x: 0, y: 2)
         )
     }
@@ -460,7 +460,7 @@ struct FavoriteCard: View {
                     
                     Text(favorite.bookName)
                         .font(.caption2)
-                        .foregroundStyle(Color.gray)
+                        .foregroundStyle(Color.secondary)
                 }
                 
                 Spacer()
@@ -477,13 +477,13 @@ struct FavoriteCard: View {
                 .font(.body)
                 .lineLimit(4)
                 .truncationMode(.tail)
-                .foregroundStyle(Color.cobaltBlue) // Cambiado a Color.cobaltBlue en lugar de Color.primary para Dark Mode issue
+                .foregroundStyle(Color.primary)
         }
         .padding(16)
         .frame(maxWidth: .infinity, alignment: .leading)
         .background(
             RoundedRectangle(cornerRadius: 12, style: .continuous)
-                .fill(Color.white)
+                .fill(Color.cardBackground)
                 .shadow(color: Color.black.opacity(0.08), radius: 4, x: 0, y: 2)
         )
     }

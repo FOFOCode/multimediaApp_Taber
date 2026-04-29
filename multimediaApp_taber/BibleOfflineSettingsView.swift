@@ -58,11 +58,11 @@ struct BibleOfflineSettingsView: View {
             )
             
             VStack(alignment: .leading, spacing: 4) {
-                Text("Biblia Offline")
+                Text(L10n.offlineBible.localized())
                     .font(.system(size: 24, weight: .bold, design: .rounded))
                     .foregroundStyle(Color.cobaltBlue)
 
-                Text("Descarga la Biblia para leer sin conexión")
+                Text(L10n.downloadBiblePrompt.localized())
                     .font(.subheadline)
                     .foregroundStyle(Color.cobaltBlue.opacity(0.78))
             }
@@ -89,7 +89,7 @@ struct BibleOfflineSettingsView: View {
                 ProgressView()
                     .tint(Color.cobaltBlue)
 
-                Text("Descargando...")
+                Text(L10n.downloading.localized())
                     .font(.headline)
                     .foregroundStyle(Color.cobaltBlue)
 
@@ -126,7 +126,7 @@ struct BibleOfflineSettingsView: View {
                 .foregroundStyle(.green)
 
             VStack(alignment: .leading, spacing: 2) {
-                Text("Biblia descargada")
+                Text(L10n.bibleDownloaded.localized())
                     .font(.headline)
                     .foregroundStyle(Color.cobaltBlue)
 
@@ -153,7 +153,7 @@ struct BibleOfflineSettingsView: View {
                     .font(.system(size: 36))
                     .foregroundStyle(Color.cobaltBlue)
                 
-                Text("Descarga la Biblia completa para leer sin conexión")
+                Text(L10n.downloadFullBiblePrompt.localized())
                     .font(.subheadline)
                     .foregroundStyle(Color.cobaltBlue.opacity(0.8))
                     .multilineTextAlignment(.center)
@@ -168,7 +168,7 @@ struct BibleOfflineSettingsView: View {
             } label: {
                 HStack {
                     Image(systemName: "arrow.down.circle.fill")
-                    Text("Descargar Biblia")
+                    Text(L10n.downloadBible.localized())
                 }
                 .font(.headline)
                 .foregroundStyle(Color.aliceBlue)
@@ -188,7 +188,7 @@ struct BibleOfflineSettingsView: View {
 
     private var progressSection: some View {
         VStack(alignment: .leading, spacing: 12) {
-            Text("Progreso de lectura")
+            Text(L10n.readingProgress.localized())
                 .font(.headline.weight(.semibold))
                 .foregroundStyle(Color.cobaltBlue)
 
@@ -198,7 +198,7 @@ struct BibleOfflineSettingsView: View {
                         .foregroundStyle(Color.cobaltBlue)
 
                     VStack(alignment: .leading, spacing: 2) {
-                        Text("Continuar leyendo")
+                        Text(L10n.continueReading.localized())
                             .font(.subheadline.weight(.medium))
                             .foregroundStyle(Color.cobaltBlue)
 
@@ -218,7 +218,7 @@ struct BibleOfflineSettingsView: View {
                         .fill(Color.aliceBlue)
                 )
             } else {
-                Text("No hay progreso guardado")
+                Text(L10n.noProgressSaved.localized())
                     .font(.subheadline)
                     .foregroundStyle(Color.cobaltBlue.opacity(0.6))
                     .padding(14)
@@ -233,13 +233,13 @@ struct BibleOfflineSettingsView: View {
 
     private var cacheInfoSection: some View {
         VStack(alignment: .leading, spacing: 12) {
-            Text("Almacenamiento")
+            Text(L10n.storage.localized())
                 .font(.headline.weight(.semibold))
                 .foregroundStyle(Color.cobaltBlue)
 
             HStack {
                 VStack(alignment: .leading, spacing: 4) {
-                    Text("Capítulos descargados")
+                    Text(L10n.downloadedChapters.localized())
                         .font(.subheadline)
                         .foregroundStyle(Color.cobaltBlue.opacity(0.8))
 
@@ -251,7 +251,7 @@ struct BibleOfflineSettingsView: View {
                 Spacer()
 
                 VStack(alignment: .trailing, spacing: 4) {
-                    Text("Espacio usado")
+                    Text(L10n.spaceUsed.localized())
                         .font(.subheadline)
                         .foregroundStyle(Color.cobaltBlue.opacity(0.8))
 
@@ -269,7 +269,7 @@ struct BibleOfflineSettingsView: View {
             if offlineService.isOfflineMode {
                 HStack {
                     Image(systemName: "wifi.slash")
-                    Text("Modo offline activo")
+                    Text(L10n.offlineModeActive.localized())
                 }
                 .font(.subheadline)
                 .foregroundStyle(.orange)
@@ -289,7 +289,7 @@ struct BibleOfflineSettingsView: View {
             } label: {
                 HStack {
                     Image(systemName: "trash")
-                    Text("Borrar caché")
+                    Text(L10n.clearCache.localized())
                 }
                 .font(.subheadline.weight(.medium))
                 .foregroundStyle(.red)

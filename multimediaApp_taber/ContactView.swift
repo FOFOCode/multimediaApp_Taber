@@ -26,20 +26,20 @@ struct ContactView: View {
                             .shadow(color: Color.cobaltBlue.opacity(0.3), radius: 10, x: 0, y: 5)
                             .padding(.top, 40)
                         
-                        Text("Comunícate con nosotros")
+                        Text(L10n.contactUs.localized())
                             .font(.title2.weight(.bold))
                             .foregroundStyle(Color.cobaltBlue)
                             .padding(.bottom, -8)
                         
                         VStack(spacing: 16) {
                             VStack(spacing: 4) {
-                                Text("Pastor General Roger Barahona")
+                                Text(L10n.generalPastor.localized())
                                     .font(.headline.weight(.semibold))
-                                    .foregroundStyle(Color.cobaltBlue)
+                                    .foregroundStyle(Color.primary)
                                 
                                 Text("Pastor@tabernaculosantana.net")
                                     .font(.subheadline)
-                                    .foregroundStyle(Color.gray)
+                                    .foregroundStyle(Color.secondary)
                             }
                             
                             Button {
@@ -49,7 +49,7 @@ struct ContactView: View {
                                     Image(systemName: "paperplane.fill")
                                         .font(.headline.weight(.semibold))
                                     
-                                    Text("Enviar mensaje")
+                                    Text(L10n.sendMessage.localized())
                                         .font(.headline.weight(.semibold))
                                 }
                                 .foregroundStyle(Color.white)
@@ -66,7 +66,7 @@ struct ContactView: View {
                         .frame(maxWidth: .infinity)
                         .background(
                             RoundedRectangle(cornerRadius: 20, style: .continuous)
-                                .fill(Color.white)
+                                .fill(Color.cardBackground)
                                 .shadow(color: Color.black.opacity(0.08), radius: 12, x: 0, y: 4)
                         )
                         .padding(.horizontal, 20)

@@ -71,32 +71,6 @@ struct LanguageSelectorView: View {
                             localization.changeLanguage(to: "en")
                         }
                     }
-                    
-                    // Português
-                    LanguageOption(
-                        flag: "🇧🇷",
-                        language: "Português",
-                        code: "pt",
-                        isSelected: selectedLanguage == "pt"
-                    ) {
-                        withAnimation(.spring(response: 0.3)) {
-                            selectedLanguage = "pt"
-                            localization.changeLanguage(to: "pt")
-                        }
-                    }
-                    
-                    // Français
-                    LanguageOption(
-                        flag: "🇫🇷",
-                        language: "Français",
-                        code: "fr",
-                        isSelected: selectedLanguage == "fr"
-                    ) {
-                        withAnimation(.spring(response: 0.3)) {
-                            selectedLanguage = "fr"
-                            localization.changeLanguage(to: "fr")
-                        }
-                    }
                 }
                 .padding(.horizontal, 24)
                 

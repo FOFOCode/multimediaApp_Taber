@@ -251,6 +251,35 @@ class BibleService: ObservableObject {
     ///     query: "amor"
     /// )
     /// ```
+
+    func fetchVerse(bibleId: String, verseId: String) async throws -> SearchAPIResponse.VerseResult {
+        guard apiKey != "TU_API_KEY_AQUI" && !apiKey.isEmpty else {
+            throw BibleError.apiKeyNotConfigured
+        }
+        
+        let urlString = "\(baseURL)/bibles/\(bibleId)/verses/\(verseId)?content-type=text&include-notes=false&include-titles=false&include-chapter-numbers=false&include-verse-numbers=false&include-verse-spans=false"
+        
+        guard let url = URL(string: urlString) else {
+            throw BibleError.invalidURL
+        }
+        
+        var request = URLRequest(url: url)
+        request.setValue(apiKey, forHTTPHeaderField: "api-key")
+        
+        let (data, response) = try await urlSession.data(for: request)
+        
+        guard let httpResponse = response as? HTTPURLResponse else {
+            throw BibleError.invalidResponse("No se pudo obtener respuesta del servidor")
+        }
+        
+        guard httpResponse.statusCode == 200 else {
+            throw BibleError.invalidResponse("Código \(httpResponse.statusCode)")
+        }
+        
+        let decodedResponse = try JSONDecoder().decode(VerseAPIResponse.self, from: data)
+        return decodedResponse.data
+    }
+
     func searchVerses(bibleId: String, query: String) async throws -> [SearchAPIResponse.VerseResult] {
         guard apiKey != "TU_API_KEY_AQUI" && !apiKey.isEmpty else {
             throw BibleError.apiKeyNotConfigured

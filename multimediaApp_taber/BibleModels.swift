@@ -149,3 +149,7 @@ struct FavoriteVerse: Codable, Identifiable {
     let bookName: String
     let timestamp: Date
 }
+
+struct VerseAPIResponse: Codable {
+    let data: SearchAPIResponse.VerseResult
+}

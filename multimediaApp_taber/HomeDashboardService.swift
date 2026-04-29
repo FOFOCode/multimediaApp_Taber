@@ -58,15 +58,11 @@ final class HomeDashboardService: ObservableObject {
 
         do {
             let bibleId = BibleService.shared.getBibleForLanguage(languageCode)
-            let query = queryForToday(languageCode: languageCode)
-            let results = try await BibleService.shared.searchVerses(bibleId: bibleId, query: query)
-
-            if let picked = pickVerse(for: Date(), from: results) {
-                let cleanText = cleanHTMLTags(from: picked.displayText)
-                updateVerse(text: cleanText, reference: picked.reference, dateKey: todayKey)
-            } else {
-                applyOfflineFallback(dateKey: todayKey)
-            }
+            let verseId = verseIdForToday()
+            let verseResult = try await BibleService.shared.fetchVerse(bibleId: bibleId, verseId: verseId)
+            
+            let cleanText = cleanHTMLTags(from: verseResult.displayText)
+            updateVerse(text: cleanText, reference: verseResult.reference, dateKey: todayKey)
         } catch {
             applyOfflineFallback(dateKey: todayKey)
         }
@@ -107,13 +103,13 @@ final class HomeDashboardService: ObservableObject {
         let completed = weekDates.filter { checkins.contains($0) }.count
 
         weeklyPlanProgress = min(Double(completed) / 7.0, 1.0)
-        weeklyPlanBadgeText = "\(completed) de 7 días"
+        weeklyPlanBadgeText = "\(completed) " + L10n.ofSevenDays.localized()
 
         let goalMinutes = 15.0
         let todayMinutes = Int((defaults.double(forKey: todaySecondsKey) / 60.0).rounded(.down))
 
         minutesProgress = min(Double(todayMinutes) / goalMinutes, 1.0)
-        minutesBadgeText = "\(todayMinutes) min hoy"
+        minutesBadgeText = "\(todayMinutes) " + L10n.minToday.localized()
     }
 
     private func registerTodayCheckIn() {
@@ -177,30 +173,19 @@ final class HomeDashboardService: ObservableObject {
         return formatter.string(from: date)
     }
 
-    private func queryForToday(languageCode: String) -> String {
+    private func verseIdForToday() -> String {
         let day = Calendar.current.ordinality(of: .day, in: .year, for: Date()) ?? 1
-
-        let spanishQueries = ["esperanza", "amor", "fe", "gracia", "paz", "fortaleza", "misericordia"]
-        let englishQueries = ["hope", "love", "faith", "grace", "peace", "strength", "mercy"]
-        let portugueseQueries = ["esperança", "amor", "fé", "graça", "paz", "força", "misericórdia"]
-        let frenchQueries = ["espérance", "amour", "foi", "grâce", "paix", "force", "miséricorde"]
-
-        let source: [String]
-        switch languageCode {
-        case "en": source = englishQueries
-        case "pt": source = portugueseQueries
-        case "fr": source = frenchQueries
-        default: source = spanishQueries
-        }
         
-        return source[day % source.count]
+        let dailyVerses = [
+            "JHN.3.16", "PSA.23.1", "PHP.4.13", "ROM.8.28", "PRO.3.5",
+            "ISA.41.10", "JER.29.11", "MAT.6.33", "HEB.11.1", "1COR.13.4",
+            "JAM.1.2", "1PET.5.7", "1JN.5.7", "1TH.5.7"
+        ]
+        
+        let index = (day - 1) % dailyVerses.count
+        return dailyVerses[index]
     }
 
-    private func pickVerse(for date: Date, from results: [SearchAPIResponse.VerseResult]) -> SearchAPIResponse.VerseResult? {
-        guard !results.isEmpty else { return nil }
-        let day = Calendar.current.ordinality(of: .day, in: .year, for: date) ?? 1
-        return results[day % results.count]
-    }
 
     private func cleanHTMLTags(from text: String) -> String {
         text.replacingOccurrences(of: "<[^>]+>", with: "", options: .regularExpression)
@@ -209,8 +194,8 @@ final class HomeDashboardService: ObservableObject {
     }
 
     private func updateVerse(text: String, reference: String, dateKey: String) {
-        let safeText = text.isEmpty ? "No se encontró contenido para hoy." : text
-        let safeRef = reference.isEmpty ? "Lectura del día" : reference
+        let safeText = text.isEmpty ? L10n.noContentFound.localized() : text
+        let safeRef = reference.isEmpty ? L10n.readingOfDay.localized() : reference
 
         verseText = safeText
         verseRef = safeRef
@@ -228,8 +213,8 @@ final class HomeDashboardService: ObservableObject {
         }
 
         updateVerse(
-            text: "No fue posible cargar el versículo de hoy. Intenta nuevamente con conexión a internet.",
-            reference: "Sin conexión",
+            text: L10n.verseLoadError.localized(),
+            reference: L10n.noConnection.localized(),
             dateKey: dateKey
         )
     }

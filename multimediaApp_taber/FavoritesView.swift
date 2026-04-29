@@ -17,11 +17,11 @@ struct FavoritesView: View {
                             .font(.system(size: 60))
                             .foregroundStyle(Color.twitterBlue.opacity(0.5))
                         
-                        Text("No tienes favoritos")
+                        Text(L10n.noFavorites.localized())
                             .font(.title3.weight(.semibold))
                             .foregroundStyle(Color.cobaltBlue)
                         
-                        Text("Agrega capítulos o versículos para verlos aquí.")
+                        Text(L10n.addFavoritesPrompt.localized())
                             .font(.subheadline)
                             .foregroundStyle(Color.twitterBlue.opacity(0.8))
                             .multilineTextAlignment(.center)
